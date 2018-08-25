@@ -16,7 +16,9 @@ function executeQue(){
   setInterval(() => {
     const callBackObject = queOfCallbacks[currentQuePosition];
     if(callBackObject) {
+      console.log('==================');
       console.log(`Simulate button press on ${callBackObject.pin}. Execute cb: ${callBackObject.callBack.toString()}`);
+      console.log('==================');
       callBackObject.callBack();
       currentQuePosition++;
       if (currentQuePosition +1 > queOfCallbacks.length) {

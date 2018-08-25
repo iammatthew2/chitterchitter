@@ -3,8 +3,7 @@ const recorder = require.main.require('./modules/record');
 const player = require.main.require('./modules/play');
 const config = require.main.require('./constants/config');
 const throttle = require('throttleit');
-const soundplayer = require('sound-player');
-var path = require('path');
+const path = require('path');
 
 let currentlyRecording = false;
 let currentlyPlaying = false;
@@ -12,19 +11,32 @@ let currentlyPlaying = false;
 function toggleStartStopRecording() {
   if (currentlyRecording) {
     recorder.stopRecording();
+    currentlyRecording = !currentlyRecording;
   } else if (!currentlyPlaying){
     recorder.startRecording();
+    currentlyRecording = !currentlyRecording;
   }
 }
 
-module.exports = function () {
+const options = {
+  filename: path.join(__dirname) + '/dummy.wav',
+  gain: 10,
+  debug: true
+}
 
-  const options = {
-    filename: path.join(__dirname) + '/dummy.wav',
-    gain: 10,
-    debug: true
+function toggleStartStopPlaying() {
+  if (currentlyPlaying) {
+    player.stop();
+    currentlyPlaying = !currentlyPlaying;
+  } else if (!currentlyRecording){
+    player.play(options);
+    currentlyPlaying = !currentlyPlaying;
   }
+}
 
-  player.play(options);
-  eventBus.on('StartStopButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
+
+
+module.exports = function () {
+  eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
+  eventBus.on('StartStopPlayButtonPress', throttle(toggleStartStopPlaying), config.defaultThrottleRate);
 }

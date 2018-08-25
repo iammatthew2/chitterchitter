@@ -1,13 +1,4 @@
-/*
-import and init mic
-import eventsBus and emit events from the recording session
-
-export methods: startRecording, stopRecording
-*/
-
 const config = require.main.require('./constants/config');
-
-
 const mic = require('mic');
 const fs = require('fs');
 
@@ -59,7 +50,6 @@ micInputStream.on('silence', function() {
 micInputStream.on('processExitComplete', function() {
   console.log("MIC - Got SIGNAL processExitComplete");
 });
-
 
 module.exports = {
   startRecording: micInstance.start, 

@@ -1,6 +1,7 @@
 module.exports = {
   buttons: {
-    startStop: 40,
+    startStopRecording: 31,
+    startStopPlaying: 40
   },
   lights: {
     green: 15,

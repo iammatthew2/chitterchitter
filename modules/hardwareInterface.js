@@ -13,12 +13,16 @@ module.exports = ()  => {
   // set all light pins as output and set to off
   lightPins.forEach((pin) => rpio.open(pin, rpio.OUTPUT));
   lightPins.forEach((pin) => rpio.write(pin, rpio.LOW));
-
   // open all the button pins
   const buttonPins = Object.keys(buttons).map(i => buttons[i]);
-  buttonPins.forEach((pin) => rpio.open(pin, rpio.INPUT, rpio.PULL_UP));
-  rpio.open(buttons.startStop, rpio.INPUT, rpio.PULL_UP);
+  console.log('narfd: ', buttonPins)
 
-  // start watching for button events
-  rpioHelpers.safePoll(buttons.startStop, () => eventBus.emit('StartStopButtonPress'));
+  buttonPins.forEach((pin) => rpio.open(pin, rpio.INPUT, rpio.PULL_UP));
+
+  
+
+  console.log('progress v');  // start watching for button events
+  rpioHelpers.safePoll(buttons.startStopRecording, () => eventBus.emit('StartStopRecordButtonPress'));
+  rpioHelpers.safePoll(buttons.startStopPlaying, () => eventBus.emit('StartStopPlayButtonPress'));
+  console.log('Hardware Interface successfully loaded');
 }
