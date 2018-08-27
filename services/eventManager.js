@@ -1,42 +1,46 @@
-const eventBus = require.main.require('./util/eventBus');
-const recorder = require.main.require('./modules/record');
-const player = require.main.require('./modules/play');
-const config = require.main.require('./constants/config');
 const throttle = require('throttleit');
 const path = require('path');
-
-let currentlyRecording = false;
-let currentlyPlaying = false;
+const eventBus = require.main.require('./util/eventBus');
+const config = require.main.require('./util/config');
+const recorder = require.main.require('./modules/record');
+const player = require.main.require('./modules/play');
+const { change, states, stateStatusStore } = require.main.require('./util/stateStore');
 
 function toggleStartStopRecording() {
-  if (currentlyRecording) {
+  if (stateStatusStore.currentlyRecording) {
     recorder.stopRecording();
-    currentlyRecording = !currentlyRecording;
-  } else if (!currentlyPlaying){
+    change(states.currentlyRecording);
+  } else if (!stateStatusStore.currentlyPlaying){
     recorder.startRecording();
-    currentlyRecording = !currentlyRecording;
+    change(states.currentlyRecording);
   }
 }
 
-const options = {
-  filename: path.join(__dirname) + '/dummy.wav',
+const playerOptions = {
+  filename: config.audioFiles.audioInA,
   gain: 10,
   debug: true
 }
 
 function toggleStartStopPlaying() {
-  if (currentlyPlaying) {
+  if (stateStatusStore.currentlyPlaying) {
     player.stop();
-    currentlyPlaying = !currentlyPlaying;
-  } else if (!currentlyRecording){
-    player.play(options);
-    currentlyPlaying = !currentlyPlaying;
+    change(states.currentlyPlaying);
+  } else if (!stateStatusStore.currentlyRecording) {
+    player.play(playerOptions);
+    change(states.currentlyPlaying);
   }
 }
-
-
 
 module.exports = function () {
   eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
   eventBus.on('StartStopPlayButtonPress', throttle(toggleStartStopPlaying), config.defaultThrottleRate);
+  //recorder.micInputStream.on('error', error => console.log(`MIC - Error in Input Stream: ${error}`));
+  //recorder.micInputStream.on('data', data => console.log(`MIC - Received Input Stream: ${data.length}`))
+  //recorder.micInputStream.on('startComplete', () => console.log('MIC - Got SIGNAL startComplete'));
+  //recorder.micInputStream.on('stopComplete', () => console.log('MIC - Got SIGNAL stopComplete'));
+  //recorder.micInputStream.on('pauseComplete', () => console.log('MIC - Got SIGNAL pauseComplete'));
+  //recorder.micInputStream.on('resumeComplete', () => console.log('MIC - Got SIGNAL resumeComplete'));
+  //recorder.micInputStream.on('silence', () => console.log('MIC - Got SIGNAL silence'));
+  //recorder.micInputStream.on('processExitComplete', () => console.log('MIC - Got SIGNAL processExitComplete'));
 }
