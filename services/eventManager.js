@@ -26,15 +26,13 @@ const options = {
 
 function toggleStartStopPlaying() {
   if (currentlyPlaying) {
-    player.stop();
+    player.stopPlaying();
     currentlyPlaying = !currentlyPlaying;
   } else if (!currentlyRecording){
-    player.play(options);
+    player.startPlaying(options);
     currentlyPlaying = !currentlyPlaying;
   }
 }
-
-
 
 module.exports = function () {
   eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
