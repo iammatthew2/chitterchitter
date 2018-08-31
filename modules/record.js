@@ -1,4 +1,4 @@
-const config = require.main.require('./constants/config');
+const config = require.main.require('./util/config');
 const mic = require('mic');
 const fs = require('fs');
 
@@ -16,7 +16,7 @@ module.exports = {
   });
     micInputStream = micInstance.getAudioStream();
 
-    outputFileStream = fs.WriteStream(`${config.filePaths.audioOut}${config.fileNames.audioOut}`);
+    outputFileStream = fs.WriteStream(config.audioFiles.audioOut);
 
     micInputStream.pipe(outputFileStream);
 

@@ -1,36 +1,35 @@
 const eventBus = require.main.require('./util/eventBus');
 const recorder = require.main.require('./modules/record');
 const player = require.main.require('./modules/play');
-const config = require.main.require('./constants/config');
+const config = require.main.require('./util/config');
 const throttle = require('throttleit');
 const path = require('path');
-
-let currentlyRecording = false;
-let currentlyPlaying = false;
+const { change, states, stateStatusStore } = require.main.require('./util/stateStore');
 
 function toggleStartStopRecording() {
-  if (currentlyRecording) {
+  if (stateStatusStore.currentlyRecording) {
     recorder.stopRecording();
-    currentlyRecording = !currentlyRecording;
-  } else if (!currentlyPlaying){
+    change(states.currentlyRecording);
+  } else if (!stateStatusStore.currentlyPlaying){
     recorder.startRecording();
-    currentlyRecording = !currentlyRecording;
+    change(states.currentlyRecording);
   }
 }
 
-const options = {
-  filename: path.join(__dirname) + '/dummy.wav',
+
+const playerOptions = {
+  filename: config.audioFiles.audioInA,
   gain: 10,
   debug: true
 }
 
 function toggleStartStopPlaying() {
-  if (currentlyPlaying) {
+  if (stateStatusStore.currentlyPlaying) {
     player.stopPlaying();
-    currentlyPlaying = !currentlyPlaying;
-  } else if (!currentlyRecording){
-    player.startPlaying(options);
-    currentlyPlaying = !currentlyPlaying;
+    change(states.currentlyPlaying);
+  } else if (!stateStatusStore.currentlyRecording){
+    player.startPlaying(player.startPlaying(playerOptions));
+    change(states.currentlyPlaying);
   }
 }
 
