@@ -1,6 +1,6 @@
 // start listening for hardware events
-const initHardwareInterface = require('./modules/hardwareInterface');
-initHardwareInterface();
+const hardwareInterface = require('./modules/hardwareInterface');
+hardwareInterface.init();
 
 // start checking for updates and listen for requestToSend events
 const initSendReceive = require('./modules/sendReceive');

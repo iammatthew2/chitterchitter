@@ -34,7 +34,17 @@ function toggleStartStopPlaying() {
   }
 }
 
+/**
+ connectionsKnobTurn(){
+   updateState  <-- you are now connected with #3;
+   updateLights <--- turn of all connection lights, turn on #3
+ }
+ */
+
 module.exports = function () {
   eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
   eventBus.on('StartStopPlayButtonPress', throttle(toggleStartStopPlaying), config.defaultThrottleRate);
+  //player.on('play', light the play light);
+  //player.on('stop', light the stop light);
+  //eventBus.on('turn the familiyConections knob', run the connectionsKnobTurn fn)
 }
