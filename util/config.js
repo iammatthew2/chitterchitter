@@ -1,21 +1,35 @@
 const path = require('path');
 const topLevelDirectory = path.dirname(require.main.filename);
 
-const audioOut = path.join(topLevelDirectory, 'audio', 'created','out.raw');
-const audioIn = path.join(topLevelDirectory, 'audio', 'received');
+const audioOutPath = path.join(topLevelDirectory, 'audio', 'created');
+const audioInPath = path.join(topLevelDirectory, 'audio', 'received');
+
+const IS_DEBUG = false;
+
+const AUDIO_FILES = {
+  audioOut: path.join(audioOutPath, 'out.wav'),
+  audioInA: path.join(audioOutPath, 'dummy.wav'),
+  audioInB: path.join(audioInPath, 'audioInB')
+};
 
 module.exports = {
-  isMock: true,
-  mockDelay: 1000,
-  defaultThrottleRate: 500,
-  audioFiles: {
-    audioOut: audioOut,
-    audioInA: path.join(audioIn, 'dummy.wav'),
-    audioInB: path.join(audioIn, 'audioInB')
+  dev: {
+    isMock: true,
+    isDebug: IS_DEBUG,
+    mockDelay: 1000,
   },
+  defaultThrottleRate: 500,
   playerOptions: {
-    filename: audioOut,
+    filename: AUDIO_FILES.audioOut,
     gain: 10,
-    debug: true
+    debug: IS_DEBUG
+  },
+  recorderOptions: {
+    rate: '16000',
+    channels: '1',
+    debug: IS_DEBUG,
+    exitOnSilence: 6,
+    file: AUDIO_FILES.audioOut,
+    fileType: 'wav'
   }
 }

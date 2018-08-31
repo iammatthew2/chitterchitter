@@ -7,23 +7,20 @@ let micInputStream;
 let outputFileStream;
 
 module.exports = {
-  startRecording: function(){
-    micInstance = mic({
-      rate: '16000',
-      channels: '1',
-      debug: true,
-      exitOnSilence: 6
-  });
+  startRecording: function(options){
+    micInstance = mic(options);
     micInputStream = micInstance.getAudioStream();
 
-    outputFileStream = fs.WriteStream(config.audioFiles.audioOut);
+    outputFileStream = fs.WriteStream(options.file);
 
     micInputStream.pipe(outputFileStream);
 
-    micInputStream.on('data', data => console.log("MIC - Recieved Input Stream: " + data.length));
-
     micInputStream.on('error', error => console.log("MIC - Error in Input Stream: " + error));
 
+    if (config.dev.isDebug) {
+      console.log(`Recording to file: ${options.file}`);
+      micInputStream.on('data', data => console.log("MIC - Recieved Input Stream: " + data.length));
+    }
     micInstance.start();
   },
 

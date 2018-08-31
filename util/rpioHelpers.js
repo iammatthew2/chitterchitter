@@ -5,7 +5,7 @@ const queOfCallbacks = [];
 let currentQuePosition = 0;
 
 function safePoll(pin, callBack, pinSetting) {
-  if (configs.isMock) {
+  if (configs.dev.isMock) {
     queOfCallbacks.push({callBack, pin});
   } else {
     rpio.poll(pin, callBack, pinSetting)
@@ -16,19 +16,21 @@ function executeQue(){
   setInterval(() => {
     const callBackObject = queOfCallbacks[currentQuePosition];
     if(callBackObject) {
-      console.log('==================');
-      console.log(`Simulate button press on ${callBackObject.pin}. Execute cb: ${callBackObject.callBack.toString()}`);
-      console.log('==================');
+      if (configs.dev.isDebug) {
+        console.log('==================');
+        console.log(`Simulate button press on ${callBackObject.pin}. Execute cb: ${callBackObject.callBack.toString()}`);
+        console.log('==================');
+      }
       callBackObject.callBack();
       currentQuePosition++;
       if (currentQuePosition +1 > queOfCallbacks.length) {
         currentQuePosition = 0;
       }
     }
-  }, configs.mockDelay || 1000);
+  }, configs.dev.mockDelay || 1000);
 }
 
-if (configs.isMock) {
+if (configs.dev.isMock) {
   setTimeout(executeQue, 1000);
 }
 

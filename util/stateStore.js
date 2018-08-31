@@ -1,17 +1,3 @@
-// AltstateStatusOptions = [
-//     {
-//       name: 'recordingState',
-//       curentState: false,
-//       options: [false, true]
-//     },
-//     {
-//       name: 'narfs',
-//       curentState: false,
-//       options: [false, true]
-//     }
-//   ];
-
-
 const stateStatusStore = {
   currentlyRecording: false,
   currentlyPlaying: false,

@@ -25,7 +25,6 @@ hardware =  {
   },
 
   toggleLightArray(lightArray = [], turnOn = true) {
-    console.log('turn on an array of lights');
     lightArray.forEach(light => rpio.write(light, turnOn ? rpio.HIGH : rpio.LOW));
   },
 
