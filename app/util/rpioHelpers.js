@@ -1,5 +1,5 @@
 const rpio = require('rpio');
-const configs = require.main.require('./util/config');
+const configs = require.main.require('./app/util/config');
 
 const queOfCallbacks = [];
 let currentQuePosition = 0;

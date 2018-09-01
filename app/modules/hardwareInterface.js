@@ -1,9 +1,9 @@
 const rpio = require('rpio');
-const rpioHelpers = require.main.require('./util/rpioHelpers');
-const eventBus = require.main.require('./util/eventBus');
+const rpioHelpers = require.main.require('./app/util/rpioHelpers');
+const eventBus = require.main.require('./app/util/eventBus');
 
 
-const { buttons, lights } = require.main.require('./constants/hardware');
+const { buttons, lights } = require.main.require('./app/constants/hardware');
 
 hardware =  {
   init() {

@@ -1,4 +1,4 @@
-const config = require.main.require('./util/config');
+const config = require.main.require('./app/util/config');
 const mic = require('mic');
 const fs = require('fs');
 

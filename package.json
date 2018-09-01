@@ -9,6 +9,9 @@
     "mic": "^2.1.2",
     "rpio": "^0.9.22",
     "sound-player": "^1.0.13",
-    "throttleit": "^1.0.0"
+    "throttleit": "^1.0.0",
+    "azure-storage": "^2.8.0",
+    "dotenv": "^5.0.0",
+    "yargs": "^11.0.0"
   }
 }
