@@ -1,9 +1,14 @@
+const throttle = require('throttleit');
 const eventBus = require.main.require('./app/util/eventBus');
 const recorder = require.main.require('./app/modules/record');
 const player = require.main.require('./app/modules/play');
 const config = require.main.require('./app/util/config');
-const throttle = require('throttleit');
 const { change, states, stateStatusStore } = require.main.require('./app/util/stateStore');
+
+function init() {
+  eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
+  eventBus.on('StartStopPlayButtonPress', throttle(toggleStartStopPlaying), config.defaultThrottleRate);
+}
 
 function toggleStartStopRecording() {
   if (stateStatusStore.currentlyRecording) {
@@ -25,7 +30,4 @@ function toggleStartStopPlaying() {
   }
 }
 
-module.exports = function () {
-  eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
-  eventBus.on('StartStopPlayButtonPress', throttle(toggleStartStopPlaying), config.defaultThrottleRate);
-}
+module.exports = { init };

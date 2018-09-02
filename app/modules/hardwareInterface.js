@@ -1,8 +1,6 @@
 const rpio = require('rpio');
 const rpioHelpers = require.main.require('./app/util/rpioHelpers');
 const eventBus = require.main.require('./app/util/eventBus');
-
-
 const { buttons, lights } = require.main.require('./app/constants/hardware');
 
 hardware =  {
@@ -21,7 +19,6 @@ hardware =  {
 
     rpioHelpers.safePoll(buttons.startStopRecording, () => eventBus.emit('StartStopRecordButtonPress'));
     rpioHelpers.safePoll(buttons.startStopPlaying, () => eventBus.emit('StartStopPlayButtonPress'));
-    console.log('Hardware Interface successfully loaded');
   },
 
   toggleLightArray(lightArray = [], turnOn = true) {

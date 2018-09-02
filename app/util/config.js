@@ -31,5 +31,15 @@ module.exports = {
     exitOnSilence: 6,
     file: AUDIO_FILES.audioOut,
     fileType: 'wav'
+  }, 
+  hardware: {
+    buttons: {
+      startStopRecording: 31,
+      startStopPlaying: 40
+    },
+    lights: {
+      green: 15,
+      red: 16
+    }
   }
 }

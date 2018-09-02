@@ -1,4 +1,3 @@
-const config = require.main.require('./app/util/config');
 const mic = require('mic');
 const fs = require('fs');
 
@@ -17,7 +16,7 @@ module.exports = {
 
     micInputStream.on('error', error => console.log("MIC - Error in Input Stream: " + error));
 
-    if (config.dev.isDebug) {
+    if (options.isDebug) {
       console.log(`Recording to file: ${options.file}`);
       micInputStream.on('data', data => console.log("MIC - Recieved Input Stream: " + data.length));
     }

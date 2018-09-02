@@ -1,3 +1,5 @@
+const config = require.main.require('./app/util/config');
+
 const stateStatusStore = {
   currentlyRecording: false,
   currentlyPlaying: false,
@@ -42,8 +44,12 @@ function change(property, direction = directions.forward) {
     newIndex = 0;
   }
 
+  
+  if (config.dev.isDebug) {
+    console.log(`stateStore is changing ${property} state to ${itemOptions[newIndex]}`);
+  }
+  
   // the new index is good. Assign it.
-  console.log(`changing ${property} state to ${itemOptions[newIndex]}`);
   stateStatusStore[property] = itemOptions[newIndex];
 }
 
