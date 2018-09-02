@@ -1,7 +1,10 @@
 const rpio = require('rpio');
 const rpioHelpers = require.main.require('./app/util/rpioHelpers');
 const eventBus = require.main.require('./app/util/eventBus');
-const { buttons, lights } = require.main.require('./app/constants/hardware');
+const config = require.main.require('./app/util/config');
+
+const { buttons, lights } = config.hardware;
+const events = config.events;
 
 hardware =  {
   init() {
@@ -16,9 +19,10 @@ hardware =  {
     // open all button pins
     const buttonPins = Object.keys(buttons).map(i => buttons[i]);
     buttonPins.forEach((pin) => rpio.open(pin, rpio.INPUT, rpio.PULL_UP));
-
-    rpioHelpers.safePoll(buttons.startStopRecording, () => eventBus.emit('StartStopRecordButtonPress'));
-    rpioHelpers.safePoll(buttons.startStopPlaying, () => eventBus.emit('StartStopPlayButtonPress'));
+    
+    rpioHelpers.safePoll(buttons.startStopRecording, () => eventBus.emit(events.START_STOP_RECORD_BUTTON_PRESS));
+    rpioHelpers.safePoll(buttons.startStopPlaying, () => eventBus.emit(events.START_STOP_PLAY_BUTTON_PRESS));
+    rpioHelpers.safePoll(buttons.sendAudioFile, () => eventBus.emit(events.SEND_AUDIO_FILE_BUTTON_PRESS));
   },
 
   toggleLightArray(lightArray = [], turnOn = true) {

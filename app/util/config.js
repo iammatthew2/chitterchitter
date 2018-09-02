@@ -35,11 +35,17 @@ module.exports = {
   hardware: {
     buttons: {
       startStopRecording: 31,
-      startStopPlaying: 40
+      startStopPlaying: 40,
+      sendAudioFile: 36
     },
     lights: {
       green: 15,
       red: 16
     }
+  },
+  events: {
+    START_STOP_RECORD_BUTTON_PRESS: 'StartStopRecordButtonPress',
+    START_STOP_PLAY_BUTTON_PRESS: 'StartStopPlayButtonPress',
+    SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress'
   }
 }
