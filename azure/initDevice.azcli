@@ -1,0 +1,16 @@
+# Add the IoT Hub CLI extension
+az extension add --name azure-cli-iot-ext
+# Create the device identity
+az iot hub device-identity create --hub-name chitter-iot --device-id abc123
+
+# Get the device connection string for the device you just registered
+az iot hub device-identity show-connection-string --hub-name chitter-iot --device-id abc123 --output table
+
+# Get the Event Hubs-compatible endpoint, Event Hubs-compatible path, 
+# and iothubowner primary key from your IoT hub to enable the back-end application 
+# to connect to your IoT hub and retrieve the messages                                                           
+az iot hub show --query properties.eventHubEndpoints.events.endpoint --name chitter-iot
+
+az iot hub show --query properties.eventHubEndpoints.events.path --name chitter-iot
+
+az iot hub policy show --name iothubowner --query primaryKey --hub-name chitter-iot

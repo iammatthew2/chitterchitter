@@ -46,6 +46,7 @@ module.exports = {
   events: {
     START_STOP_RECORD_BUTTON_PRESS: 'StartStopRecordButtonPress',
     START_STOP_PLAY_BUTTON_PRESS: 'StartStopPlayButtonPress',
-    SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress'
+    SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress',
+    APPLICATION_STARTUP: 'applicationStartup',
   }
 }

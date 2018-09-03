@@ -1,3 +1,0 @@
-/*
-various effect options
-*/
