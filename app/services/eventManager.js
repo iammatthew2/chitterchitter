@@ -35,8 +35,11 @@ function sendFile(){
 }
 
 function updateDeviceState() {
-  console.log('updateDeviceState');
-    iotHubInterface.iotHubActions.updateDeviceState({narf: 'this is new'})
+  iotHubInterface.iotHubActions.updateDeviceState({narf: 'this is new'})
+}
+
+function getFile() {
+  console.log('getting file');
 }
 
 const events = config.events;
@@ -47,7 +50,9 @@ function init() {
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SCROLL_CONNECTION_SELECT, () => { console.log('scrolled') });
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, sendFile);
+  eventBus.on(events.GET_FILE, getFile);
   eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);
+
 }
 
 module.exports = { init };
@@ -63,6 +68,7 @@ const eventsToEmit = [
   events.START_STOP_PLAY_BUTTON_PRESS,
   events.START_STOP_PLAY_BUTTON_PRESS,
   events.SEND_AUDIO_FILE_BUTTON_PRESS,
+  events.GET_FILE,
   events.UPDATE_DEVICE_STATE
 
 ];
