@@ -10,6 +10,7 @@ module.exports = {
     micInstance = mic(options);
     micInputStream = micInstance.getAudioStream();
 
+    // TODO: rename file to fileName like in player.js
     outputFileStream = fs.WriteStream(options.file);
 
     micInputStream.pipe(outputFileStream);

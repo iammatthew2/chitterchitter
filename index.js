@@ -3,8 +3,9 @@ function appStartUp(){
   require('dotenv').config();
 
   console.log('Loading iot hub');
-  const iotHubInterface = require.main.require('./app/services/iotHubInterface');
+  const iotHubInterface = require('./app/services/iotHubInterface');
   iotHubInterface.connect();
+  iotHubInterface.sendFile();
 
   console.log('Loading hardware');
   const hardwareInterface = require('./app/modules/hardwareInterface');
