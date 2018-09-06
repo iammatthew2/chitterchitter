@@ -18,7 +18,7 @@ function toggleStartStopRecording() {
 }
 
 function toggleStartStopPlaying() {
-  console.log('toiglgle playerr')
+  console.log('toggle player')
   if (stateStatusStore.currentlyPlaying) {
     player.stopPlaying();
     change(states.currentlyPlaying);
@@ -31,15 +31,33 @@ function toggleStartStopPlaying() {
 const filename = 'out22.wav';
 
 function sendFile(){
+  console.log('send file');
   iotHubInterface.iotHubActions.sendFile(filename);
 }
 
 function updateDeviceState() {
+  console.log('update device');
   iotHubInterface.iotHubActions.updateDeviceState({narf: 'this is new'})
 }
 
-function getFile() {
+const getFile2 = () => {
+  iotHubInterface.iotHubActions.download2();
+}
+
+const getFile = async() => {
   console.log('getting file');
+  try {
+    const response = await iotHubInterface.iotHubActions.download();
+    console.log(response.message);
+
+    if (response.data) {
+        response.data.entries.forEach(entry => {
+            console.log('Name:', entry.name, ' Type:', entry.blobType)
+        });
+    }
+  } catch(e){
+debugger;
+  }
 }
 
 const events = config.events;
@@ -50,7 +68,7 @@ function init() {
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SCROLL_CONNECTION_SELECT, () => { console.log('scrolled') });
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, sendFile);
-  eventBus.on(events.GET_FILE, getFile);
+  eventBus.on(events.GET_FILE, getFile2);
   eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);
 
 }
@@ -63,13 +81,13 @@ module.exports = { init };
 
 // record something, play something, upload a file, update state
 const eventsToEmit = [
-  events.START_STOP_RECORD_BUTTON_PRESS,
-  events.START_STOP_RECORD_BUTTON_PRESS,
-  events.START_STOP_PLAY_BUTTON_PRESS,
-  events.START_STOP_PLAY_BUTTON_PRESS,
-  events.SEND_AUDIO_FILE_BUTTON_PRESS,
+  // events.START_STOP_RECORD_BUTTON_PRESS,
+  // events.START_STOP_RECORD_BUTTON_PRESS,
+  // events.START_STOP_PLAY_BUTTON_PRESS,
+  // events.START_STOP_PLAY_BUTTON_PRESS,
+  // events.SEND_AUDIO_FILE_BUTTON_PRESS,
   events.GET_FILE,
-  events.UPDATE_DEVICE_STATE
+ // events.UPDATE_DEVICE_STATE
 
 ];
 
