@@ -51,5 +51,6 @@ module.exports = {
     UPDATE_DEVICE_STATE: 'updateDeviceState',
     SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
+    GET_FILE: 'getFile'
   }
 }
