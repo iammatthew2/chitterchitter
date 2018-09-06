@@ -4,14 +4,23 @@ const chalk = require('chalk');
 const connectionString = process.env.AZURE_IOT_CONNECTION_STRING;
 const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
 const fs = require('fs');
-const filename = 'out2.wav';
 
 function defaultAction(){
   console.log('iotHub connection not yet complete');
 }
 
 const iotHubActions = {
-  update: defaultAction
+  updateDeviceState: defaultAction,
+  sendFile: (filename) => fs.stat(filename, function (err, stats) {
+    const rr = fs.createReadStream(filename);
+    client.uploadToBlob(filename, rr, stats.size, function (err) {
+        if (err) {
+            console.error(chalk.red('Error uploading file: ' + err.toString()));
+        } else {
+            console.log(chalk.green('File uploaded'));
+        }
+    });
+  })
 }
 
 const iotHub = {
@@ -20,7 +29,7 @@ const iotHub = {
     client.open(function (err) {  
       client.getTwin(function(err, twin) {
         iotHubActions.twin = twin;
-        iotHubActions.update = (obj) => {
+        iotHubActions.updateDeviceState = (obj) => {
           twin.properties.reported.update(obj, (err) => {
             if (err) {
               console.error(chalk.red('Could not update twin'));
@@ -29,19 +38,6 @@ const iotHub = {
             }
           });
         }
-      });
-    });
-  },
-
-  sendFile() {
-    fs.stat(filename, function (err, stats) {
-      const rr = fs.createReadStream(filename);
-      client.uploadToBlob(filename, rr, stats.size, function (err) {
-          if (err) {
-              console.error(chalk.red('Error uploading file: ' + err.toString()));
-          } else {
-              console.log(chalk.green('File uploaded'));
-          }
       });
     });
   },

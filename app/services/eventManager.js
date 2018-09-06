@@ -1,13 +1,13 @@
 const throttle = require('throttleit');
-const eventBus = require.main.require('./app/util/eventBus');
-const recorder = require.main.require('./app/modules/record');
-const iotHubInterface = require.main.require('./app/services/iotHubInterface');
-
-const player = require.main.require('./app/modules/play');
-const config = require.main.require('./app/util/config');
-const { change, states, stateStatusStore } = require.main.require('./app/util/stateStore');
+const eventBus = require('../util/eventBus');
+const recorder = require('../modules/record');
+const iotHubInterface = require('./iotHubInterface');
+const player = require('../modules/play');
+const config = require('../util/config');
+const { change, states, stateStatusStore } = require('../util/stateStore');
 
 function toggleStartStopRecording() {
+  console.log('toggle Recorder');
   if (stateStatusStore.currentlyRecording) {
     recorder.stopRecording();
     change(states.currentlyRecording);
@@ -18,6 +18,7 @@ function toggleStartStopRecording() {
 }
 
 function toggleStartStopPlaying() {
+  console.log('toiglgle playerr')
   if (stateStatusStore.currentlyPlaying) {
     player.stopPlaying();
     change(states.currentlyPlaying);
@@ -27,10 +28,60 @@ function toggleStartStopPlaying() {
   }
 }
 
+const filename = 'out22.wav';
+
+function sendFile(){
+  iotHubInterface.iotHubActions.sendFile(filename);
+}
+
+function updateDeviceState() {
+  console.log('updateDeviceState');
+    iotHubInterface.iotHubActions.updateDeviceState({narf: 'this is new'})
+}
+
+const events = config.events;
+
 function init() {
-  eventBus.on('StartStopRecordButtonPress', throttle(toggleStartStopRecording), config.defaultThrottleRate);
-  eventBus.on('StartStopPlayButtonPress', throttle(toggleStartStopPlaying), config.defaultThrottleRate);
-  eventBus.on(config.events.SEND_AUDIO_FILE_BUTTON_PRESS, throttle(() => iotHubInterface.iotHubActions.update({narf: 'this is new'}), config.defaultThrottleRate));
+  // TODO: start use debounce in a few places - such as UPDATE_DEVICE_STATE
+  eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
+  eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
+  eventBus.on(events.SCROLL_CONNECTION_SELECT, () => { console.log('scrolled') });
+  eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, sendFile);
+  eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);
 }
 
 module.exports = { init };
+
+
+// Some messy little helper code I will not keep
+
+
+// record something, play something, upload a file, update state
+const eventsToEmit = [
+  events.START_STOP_RECORD_BUTTON_PRESS,
+  events.START_STOP_RECORD_BUTTON_PRESS,
+  events.START_STOP_PLAY_BUTTON_PRESS,
+  events.START_STOP_PLAY_BUTTON_PRESS,
+  events.SEND_AUDIO_FILE_BUTTON_PRESS,
+  events.UPDATE_DEVICE_STATE
+
+];
+
+function slowEach( array, interval, callback ) {
+  if( ! array.length ) return;
+  var i = 0;
+  next();
+  function next() {
+      if( callback( array[i], i ) !== false ) {
+          if( ++i < array.length ) {
+              setTimeout( next, interval );
+          }
+      }
+  }
+}
+
+eventBus.on(events.APPLICATION_STARTUP, () => {
+  slowEach(eventsToEmit, 3000, function(event) {
+    eventBus.emit(event);
+  });
+});

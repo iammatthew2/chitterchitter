@@ -17,6 +17,7 @@ module.exports = {
     isMock: true,
     isDebug: IS_DEBUG,
     mockDelay: 1000,
+    executeQue: false
   },
   defaultThrottleRate: 500,
   playerOptions: {
@@ -44,9 +45,11 @@ module.exports = {
     }
   },
   events: {
-    START_STOP_RECORD_BUTTON_PRESS: 'StartStopRecordButtonPress',
-    START_STOP_PLAY_BUTTON_PRESS: 'StartStopPlayButtonPress',
+    START_STOP_RECORD_BUTTON_PRESS: 'startStopRecordButtonPress',
+    START_STOP_PLAY_BUTTON_PRESS: 'startStopPlayButtonPress',
     SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress',
+    UPDATE_DEVICE_STATE: 'updateDeviceState',
+    SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
   }
 }

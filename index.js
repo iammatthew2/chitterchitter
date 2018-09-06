@@ -2,10 +2,9 @@ function appStartUp(){
   console.log('Initializing ChitterChitter');
   require('dotenv').config();
 
-  console.log('Loading iot hub');
+  console.log('Loading iot hub and connecting');
   const iotHubInterface = require('./app/services/iotHubInterface');
   iotHubInterface.connect();
-  iotHubInterface.sendFile();
 
   console.log('Loading hardware');
   const hardwareInterface = require('./app/modules/hardwareInterface');
@@ -15,7 +14,11 @@ function appStartUp(){
   const eventManager = require('./app/services/eventManager');
   eventManager.init();
   
-  console.log('ChitterChitter is up and running')  
+  console.log('ChitterChitter is up and running');
+
+  const config = require('./app/util/config');
+  const eventBus = require('./app/util/eventBus');
+  eventBus.emit(config.events.APPLICATION_STARTUP);
 }
 
 appStartUp();

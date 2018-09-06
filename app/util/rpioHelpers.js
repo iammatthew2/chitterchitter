@@ -1,5 +1,5 @@
 const rpio = require('rpio');
-const configs = require.main.require('./app/util/config');
+const configs = require('../util/config');
 
 const queOfCallbacks = [];
 let currentQuePosition = 0;
@@ -30,7 +30,7 @@ function executeQue(){
   }, configs.dev.mockDelay || 1000);
 }
 
-if (configs.dev.isMock) {
+if (configs.dev.executeQue) {
   setTimeout(executeQue, 1000);
 }
 
