@@ -1,5 +1,6 @@
 function appStartUp(){
   console.log('Initializing ChitterChitter');
+  console.log(`Node version: ${process.version}`);
   require('dotenv').config();
 
   console.log('Loading iot hub and connecting');

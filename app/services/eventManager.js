@@ -7,7 +7,7 @@ const config = require('../util/config');
 const { change, states, stateStatusStore } = require('../util/stateStore');
 
 function toggleStartStopRecording() {
-  console.log('toggle Recorder');
+  console.log('toggle recording');
   if (stateStatusStore.currentlyRecording) {
     recorder.stopRecording();
     change(states.currentlyRecording);
@@ -18,7 +18,7 @@ function toggleStartStopRecording() {
 }
 
 function toggleStartStopPlaying() {
-  console.log('toggle player')
+  console.log('toggle playing');
   if (stateStatusStore.currentlyPlaying) {
     player.stopPlaying();
     change(states.currentlyPlaying);
@@ -28,36 +28,19 @@ function toggleStartStopPlaying() {
   }
 }
 
-const filename = 'out22.wav';
+// dummy upload file
+const filename = 'dummyUpload.wav';
 
-function sendFile(){
-  console.log('send file');
-  iotHubInterface.iotHubActions.sendFile(filename);
+function uploadFile(){
+  iotHubInterface.iotHubActions.upload(filename);
 }
 
 function updateDeviceState() {
-  console.log('update device');
-  iotHubInterface.iotHubActions.updateDeviceState({narf: 'this is new'})
+  iotHubInterface.iotHubActions.updateDeviceState({ narf: 'this is new' })
 }
 
-const getFile2 = () => {
-  iotHubInterface.iotHubActions.download2();
-}
-
-const getFile = async() => {
-  console.log('getting file');
-  try {
-    const response = await iotHubInterface.iotHubActions.download();
-    console.log(response.message);
-
-    if (response.data) {
-        response.data.entries.forEach(entry => {
-            console.log('Name:', entry.name, ' Type:', entry.blobType)
-        });
-    }
-  } catch(e){
-debugger;
-  }
+const downloadFile = () => {
+  iotHubInterface.iotHubActions.download();
 }
 
 const events = config.events;
@@ -67,8 +50,8 @@ function init() {
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SCROLL_CONNECTION_SELECT, () => { console.log('scrolled') });
-  eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, sendFile);
-  eventBus.on(events.GET_FILE, getFile2);
+  eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, uploadFile);
+  eventBus.on(events.GET_FILE, downloadFile);
   eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);
 
 }
@@ -87,7 +70,7 @@ const eventsToEmit = [
   // events.START_STOP_PLAY_BUTTON_PRESS,
   // events.SEND_AUDIO_FILE_BUTTON_PRESS,
   events.GET_FILE,
- // events.UPDATE_DEVICE_STATE
+  // events.UPDATE_DEVICE_STATE
 
 ];
 
@@ -105,7 +88,33 @@ function slowEach( array, interval, callback ) {
 }
 
 eventBus.on(events.APPLICATION_STARTUP, () => {
-  slowEach(eventsToEmit, 3000, function(event) {
-    eventBus.emit(event);
+  // slowEach(eventsToEmit, 3000, function(event) {
+  //   eventBus.emit(event);
+  // });
+
+  const eventKeyboardPairs = {
+    p: events.START_STOP_PLAY_BUTTON_PRESS,
+    r: events.START_STOP_RECORD_BUTTON_PRESS,
+    s: events.SEND_AUDIO_FILE_BUTTON_PRESS,
+    g: events.GET_FILE,
+    u: events.UPDATE_DEVICE_STATE
+  }
+
+  //const validInputs = eventKeyboardPairs.Object.keys(eventKeyboardPairs);
+  
+  const readline = require('readline');
+  readline.emitKeypressEvents(process.stdin);
+  process.stdin.setRawMode(true);
+  
+  process.stdin.on('keypress', (str, key) => {
+    if (key.ctrl && key.name === 'c') {
+      process.exit();
+    } else {
+      if (true || validInputs.includes(str)) {
+        eventBus.emit(eventKeyboardPairs[str]);
+      }
+      console.log(`You pressed the "${str}" key`);
+    }
   });
 });
+

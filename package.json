@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "Matthew Villeneuve",
   "license": "MIT",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "dependencies": {
     "azure-iot-device": "^1.7.3",
     "azure-iot-device-mqtt": "^1.7.3",
