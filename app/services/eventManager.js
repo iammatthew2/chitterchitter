@@ -97,7 +97,9 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     r: events.START_STOP_RECORD_BUTTON_PRESS,
     s: events.SEND_AUDIO_FILE_BUTTON_PRESS,
     g: events.GET_FILE,
-    u: events.UPDATE_DEVICE_STATE
+    u: events.UPDATE_DEVICE_STATE,
+    k: { event: events.SCROLL_CONNECTION_SELECT, arg: 'up' },
+    m: { event: events.SCROLL_CONNECTION_SELECT, arg: 'down' }
   }
 
   const validInputs = Object.keys(eventKeyboardPairs);
@@ -113,8 +115,13 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
       process.exit();
     } else {
       if (validInputs.includes(str)) {
-        console.log(`Keyboard: ${eventKeyboardPairs[str]}`);
-        eventBus.emit(eventKeyboardPairs[str]);
+        if(typeof eventKeyboardPairs[str] === 'string') {
+          console.log(`Keyboard: ${eventKeyboardPairs[str]}`);
+          eventBus.emit(eventKeyboardPairs[str]);
+        } else {
+          console.log(`Keyboard: ${eventKeyboardPairs[str].event}`);
+          eventBus.emit(eventKeyboardPairs[str].event, eventKeyboardPairs[str].arg);
+        }
       }
     }
   });

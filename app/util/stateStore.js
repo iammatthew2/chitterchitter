@@ -5,28 +5,16 @@ const eventBus = require('../util/eventBus');
 const stateStore = {
   player: 'notPlaying',
   recorder: 'notRecording',
-  currentlyRecording: false,
-  currentlyPlaying: false,
-  playSource: 'recorded', // options: recorded or received
-  receivedSelected: 'a' // options: 'a', 'b'...
 }
 
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
-  currentlyRecording: [false, true],
-  currentlyPlaying: [false, true],
-  playSource: ['recorded', 'received'],
-  receivedSelected: ['a', 'b', 'c', 'd', 'e']
 }
 
 const properties = {
   player: 'player',
-  recorder: 'recorder',
-  currentlyRecording: 'currentlyRecording',
-  currentlyPlaying: 'currentlyPlaying',
-  playSource: 'playSource',
-  receivedSelected: 'receivedSelected'
+  recorder: 'recorder'
 }
 
 const directions = {
