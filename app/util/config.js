@@ -25,6 +25,11 @@ module.exports = {
     gain: 10,
     debug: IS_DEBUG
   },
+  preRecordPlayerOptions: {
+    filename: path.join(topLevelDirectory,'startRecordingPlease.wav'),
+    gain: 8,
+    debug: IS_DEBUG
+  },
   recorderOptions: {
     rate: '16000',
     channels: '1',
@@ -38,6 +43,10 @@ module.exports = {
       startStopRecording: 31,
       startStopPlaying: 40,
       sendAudioFile: 36
+    },
+    rotaryDial: {
+      pwr: 'not sure how this works',
+      clk: 'whatever'
     },
     lights: {
       green: 15,

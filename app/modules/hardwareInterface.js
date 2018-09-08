@@ -1,10 +1,36 @@
 const rpio = require('rpio');
-const rpioHelpers = require.main.require('./app/util/rpioHelpers');
-const eventBus = require.main.require('./app/util/eventBus');
-const config = require.main.require('./app/util/config');
+const rpioHelpers = require('../util/rpioHelpers');
+const eventBus = require('../util/eventBus');
+const config = require('../util/config');
 
 const { buttons, lights } = config.hardware;
 const events = config.events;
+
+function rotaryDialWatcher() {
+  // try this: https://github.com/andrewn/raspi-rotary-encoder
+
+/**
+var raspi = require('raspi');
+var RotaryEncoder = require('raspi-rotary-encoder').RotaryEncoder;
+
+raspi.init(function() {
+  var encoder = new RotaryEncoder({
+    pins: { a: 5, b: 4 },
+    pullResistors: { a: "up", b: "up" }
+  });
+
+  encoder.addListener('change', function (evt) {
+    console.log('Count', evt.value);
+  })
+});
+ */
+  let cachedValue = 0;
+  const encoder = {};
+  encoder.on('change', (e) => {
+    eventBus.emit(events.SCROLL_CONNECTION_SELECT, e.val > cachedValue ? 'up' : 'down');
+  });
+
+}
 
 hardware =  {
   init() {
