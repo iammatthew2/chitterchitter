@@ -4,7 +4,7 @@ const topLevelDirectory = path.dirname(require.main.filename);
 const audioOutPath = path.join(topLevelDirectory, 'audio', 'created');
 const audioInPath = path.join(topLevelDirectory, 'audio', 'received');
 
-const IS_DEBUG = false;
+const IS_DEBUG = true;
 
 const AUDIO_FILES = {
   audioOut: path.join(audioOutPath, 'out.wav'),
@@ -46,6 +46,11 @@ module.exports = {
   },
   events: {
     START_STOP_RECORD_BUTTON_PRESS: 'startStopRecordButtonPress',
+    PLAYER_STOPPED: 'playerStopped',
+    PLAYER_STARTED: 'playerStarted',
+    RECORDER_STOPPED: 'recorderStopped',
+    RECORDER_STARTED: 'recorderStarted',
+    STATE_CHANGED: 'stateChanged',
     START_STOP_PLAY_BUTTON_PRESS: 'startStopPlayButtonPress',
     SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress',
     UPDATE_DEVICE_STATE: 'updateDeviceState',

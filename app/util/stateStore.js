@@ -1,6 +1,10 @@
-const config = require.main.require('./app/util/config');
+const config = require('../util/config');
+const eventBus = require('../util/eventBus');
 
-const stateStatusStore = {
+
+const stateStore = {
+  player: 'notPlaying',
+  recorder: 'notRecording',
   currentlyRecording: false,
   currentlyPlaying: false,
   playSource: 'recorded', // options: recorded or received
@@ -8,13 +12,17 @@ const stateStatusStore = {
 }
 
 const stateStatusOptions = {
+  player: ['playing', 'notPlaying'],
+  recorder: ['recording', 'notRecording'],
   currentlyRecording: [false, true],
   currentlyPlaying: [false, true],
   playSource: ['recorded', 'received'],
   receivedSelected: ['a', 'b', 'c', 'd', 'e']
 }
 
-const states = {
+const properties = {
+  player: 'player',
+  recorder: 'recorder',
   currentlyRecording: 'currentlyRecording',
   currentlyPlaying: 'currentlyPlaying',
   playSource: 'playSource',
@@ -26,12 +34,26 @@ const directions = {
   back: 'back'
 }
 
-//change(states.currentlyRecording, direction.forward)
-function change(property, direction = directions.forward) {
+//change(properties.currentlyRecording, direction.forward)
+function change(property, direction, force) {
+  const nextState = force ? force : getNextState(property, direction);
+  stateStore[property] = nextState;
+  console.log(`new state for ${property} - it will now be ${nextState}`);
+  eventBus.emit(config.events.STATE_CHANGED);
+}
+
+/**
+ * Given a property, get the next state from an array of options
+ * We treat the array as circular so reaching the end of state
+ * options means we start back at the beginning.
+ * @param {*} property 
+ * @param {*} direction 
+ */
+function getNextState(property, direction = directions.forward) {
   const moveForward = direction === directions.forward;
   const itemOptions = stateStatusOptions[property];
   const lengthFromZero = itemOptions.length -1;
-  const currentIndex = itemOptions.indexOf(stateStatusStore[property]);
+  const currentIndex = itemOptions.indexOf(stateStore[property]);
   let newIndex = moveForward ? currentIndex + 1 : currentIndex -1;
 
   if (newIndex < 0) {
@@ -44,13 +66,24 @@ function change(property, direction = directions.forward) {
     newIndex = 0;
   }
 
-  
   if (config.dev.isDebug) {
     console.log(`stateStore is changing ${property} state to ${itemOptions[newIndex]}`);
   }
   
-  // the new index is good. Assign it.
-  stateStatusStore[property] = itemOptions[newIndex];
+  return itemOptions[newIndex];
 }
 
-module.exports = { change, states, stateStatusStore, directions };
+module.exports = { change, properties, stateStore, directions };
+
+
+
+/**
+ 
+press stop button
+rpio emits 'stop button' pressed
+eventManager calls 'stop' on player
+player emits 'player_stopped'
+event manager calls state store change()
+state store emits 'player state update'
+event manager
+ */
