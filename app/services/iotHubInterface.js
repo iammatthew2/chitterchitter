@@ -1,9 +1,9 @@
 const Mqtt = require('azure-iot-device-mqtt').Mqtt;
+const Message = require('azure-iot-device').Message;
 const DeviceClient = require('azure-iot-device').Client
 const chalk = require('chalk');
 const connectionString = process.env.AZURE_IOT_CONNECTION_STRING;
 const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
-var Message = require('azure-iot-device').Message;
 const fs = require('fs');
 
 function defaultAction(){
@@ -41,7 +41,6 @@ const iotHubActions = {
   }),
 
   download: () => {
-    console.log('https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav');
     const https = require('https');
     const fs = require('fs');
     

@@ -1,5 +1,6 @@
 const path = require('path');
-const topLevelDirectory = path.dirname(require.main.filename);
+let topLevelDirectory = path.dirname(require.main.filename);
+topLevelDirectory = topLevelDirectory.replace('/app/test', '');
 
 const audioOutPath = path.join(topLevelDirectory, 'audio', 'created');
 const audioInPath = path.join(topLevelDirectory, 'audio', 'received');

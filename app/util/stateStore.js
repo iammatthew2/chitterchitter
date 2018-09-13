@@ -1,5 +1,4 @@
 const config = require('../util/config');
-
 const eventBus = require('../util/eventBus');
 
 // the current state for all entities - the setting here defines initial state
@@ -45,11 +44,11 @@ function change(entity, direction, force) {
  * @param {*} direction 
  */
 function getNextState(entity, direction = directions.forward) {
-  const moveForward = direction === directions.forward;
+  const shouldMoveForward = direction === directions.forward;
   const itemOptions = stateStatusOptions[entity];
   const lengthFromZero = itemOptions.length -1;
   const currentIndex = itemOptions.indexOf(stateStore[entity]);
-  let newIndex = moveForward ? currentIndex + 1 : currentIndex -1;
+  let newIndex = shouldMoveForward ? currentIndex + 1 : currentIndex -1;
 
   if (newIndex < 0) {
     // we have tried to decrement the array index and are now at a negative value
@@ -68,17 +67,4 @@ function getNextState(entity, direction = directions.forward) {
   return itemOptions[newIndex];
 }
 
-module.exports = { change, entities, stateStore, directions };
-
-
-
-/**
- 
-press stop button
-rpio emits 'stop button' pressed
-eventManager calls 'stop' on player
-player emits 'player_stopped'
-event manager calls state store change()
-state store emits 'player state update'
-event manager
- */
+module.exports = { change, entities, stateStore };
