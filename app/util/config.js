@@ -53,6 +53,10 @@ module.exports = {
       red: 16
     }
   },
+  directions: {
+    forward: 'forward',
+    back: 'back'
+  },
   events: {
     START_STOP_RECORD_BUTTON_PRESS: 'startStopRecordButtonPress',
     PLAYER_STOPPED: 'playerStopped',
@@ -63,6 +67,7 @@ module.exports = {
     START_STOP_PLAY_BUTTON_PRESS: 'startStopPlayButtonPress',
     SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress',
     UPDATE_DEVICE_STATE: 'updateDeviceState',
+    SEND_DEVICE_MESSAGE: 'sendDeviceMessage',
     SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
     GET_FILE: 'getFile'

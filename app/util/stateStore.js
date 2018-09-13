@@ -1,47 +1,54 @@
 const config = require('../util/config');
+
 const eventBus = require('../util/eventBus');
 
-
+// the current state for all entities - the setting here defines initial state
+// for caching, try adding fetching and setting state to env var
 const stateStore = {
   player: 'notPlaying',
   recorder: 'notRecording',
+  currentConnection: 'a'
 }
 
+// possible states for all entities
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
+  currentConnection: ['a', 'b', 'c', 'd', 'e']
 }
 
-const properties = {
+// items whose state is being tracked
+const entities = {
   player: 'player',
-  recorder: 'recorder'
+  recorder: 'recorder',
+  currentConnection: 'currentConnection'
 }
 
-const directions = {
+const directions = config.directions || {
   forward: 'forward',
   back: 'back'
 }
 
-//change(properties.currentlyRecording, direction.forward)
-function change(property, direction, force) {
-  const nextState = force ? force : getNextState(property, direction);
-  stateStore[property] = nextState;
-  console.log(`new state for ${property} - it will now be ${nextState}`);
+function change(entity, direction, force) {
+  console.log('args: ',arguments)
+  const nextState = force ? force : getNextState(entity, direction);
+  stateStore[entity] = nextState;
+  console.log(`new state for ${entity} - it will now be ${nextState}`);
   eventBus.emit(config.events.STATE_CHANGED);
 }
 
 /**
- * Given a property, get the next state from an array of options
+ * Given a entity, get the next state from an array of options
  * We treat the array as circular so reaching the end of state
  * options means we start back at the beginning.
- * @param {*} property 
+ * @param {*} entity
  * @param {*} direction 
  */
-function getNextState(property, direction = directions.forward) {
+function getNextState(entity, direction = directions.forward) {
   const moveForward = direction === directions.forward;
-  const itemOptions = stateStatusOptions[property];
+  const itemOptions = stateStatusOptions[entity];
   const lengthFromZero = itemOptions.length -1;
-  const currentIndex = itemOptions.indexOf(stateStore[property]);
+  const currentIndex = itemOptions.indexOf(stateStore[entity]);
   let newIndex = moveForward ? currentIndex + 1 : currentIndex -1;
 
   if (newIndex < 0) {
@@ -55,13 +62,13 @@ function getNextState(property, direction = directions.forward) {
   }
 
   if (config.dev.isDebug) {
-    console.log(`stateStore is changing ${property} state to ${itemOptions[newIndex]}`);
+    console.log(`stateStore is changing ${entity} state to ${itemOptions[newIndex]}`);
   }
   
   return itemOptions[newIndex];
 }
 
-module.exports = { change, properties, stateStore, directions };
+module.exports = { change, entities, stateStore, directions };
 
 
 

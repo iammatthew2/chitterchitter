@@ -3,6 +3,7 @@ const DeviceClient = require('azure-iot-device').Client
 const chalk = require('chalk');
 const connectionString = process.env.AZURE_IOT_CONNECTION_STRING;
 const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
+var Message = require('azure-iot-device').Message;
 const fs = require('fs');
 
 function defaultAction(){
@@ -11,6 +12,22 @@ function defaultAction(){
 
 const iotHubActions = {
   updateDeviceState: defaultAction,
+  sendMesssage: ({messageText, sendToDeviceId, audioFile, sendFromDeviceId}) => {
+    const completeMessage = new Message(JSON.stringify({
+      messageText,
+      sendToDeviceId,
+      sendFromDeviceId,
+      audioFile
+    }));
+  
+    client.sendEvent(completeMessage, function (err) {
+      if (err) {
+        console.error('send error: ' + err.toString());
+      } else {
+        console.log('message sent');
+      }
+    })
+  },
 
   upload: (filename) => fs.stat(filename, function (err, stats) {
     const rr = fs.createReadStream(filename);

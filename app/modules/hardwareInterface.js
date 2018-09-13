@@ -24,12 +24,13 @@ raspi.init(function() {
   })
 });
  */
-  let cachedValue = 0;
+  const dir = config.directions;
+  let cache = 0;
   const encoder = {};
   encoder.on('change', (e) => {
-    eventBus.emit(events.SCROLL_CONNECTION_SELECT, e.val > cachedValue ? 'up' : 'down');
+    eventBus.emit(events.SCROLL_CONNECTION_SELECT, e.val > cache ? dir.forward : dir.back);
+    cache = e.val;
   });
-
 }
 
 hardware =  {
