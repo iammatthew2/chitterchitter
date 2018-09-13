@@ -3,34 +3,10 @@
  * their logical spot and handle them here
  */
 const eventBus = require('../util/eventBus');
-const recorder = require('../modules/record');
 const iotHubInterface = require('./iotHubInterface');
-const player = require('../modules/play');
 const config = require('../util/config');
+const { toggleStartStopRecording, toggleStartStopPlaying } = require('../util/audioHelpers');
 const { change, entities, stateStore, directions } = require('../util/stateStore');
-
-const audioProcessIsRunning = () => stateStore.recorder === 'recording' || stateStore.player === 'playing';
-
-function stopAudioProcesses() {
-  player.stopPlaying();
-  recorder.stopRecording();
-}
-
-function toggleStartStopRecording() {
-  if (audioProcessIsRunning()) {
-    stopAudioProcesses();
-  } else if (stateStore.player !== 'playing'){
-    recorder.startRecording(config.recorderOptions);
-  }
-}
-
-function toggleStartStopPlaying() {
-  if (audioProcessIsRunning()) {
-    stopAudioProcesses();
-  } else if (stateStore.recorder !== 'recording'){
-    player.startPlaying(config.playerOptions);
-  }
-}
 
 // dummy upload file
 const filename = 'dummyUpload.wav';
