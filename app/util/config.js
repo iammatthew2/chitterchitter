@@ -2,13 +2,7 @@ const path = require('path');
 let topLevelDirectory = path.dirname(require.main.filename);
 topLevelDirectory = topLevelDirectory.replace('/app/test', '');
 
-const audioOutPath = path.join(topLevelDirectory, 'audio', 'created');
-
 const IS_DEBUG = true;
-
-const AUDIO_FILES = {
-  audioOut: path.join(audioOutPath, 'out.wav'),
-};
 
 module.exports = {
   dev: {
@@ -19,7 +13,6 @@ module.exports = {
   },
   defaultThrottleRate: 500,
   playerOptions: {
-    filename: AUDIO_FILES.audioOut,
     gain: 10,
     debug: IS_DEBUG
   },

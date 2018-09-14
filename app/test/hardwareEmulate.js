@@ -8,6 +8,7 @@ const events = config.events;
 eventBus.on(events.APPLICATION_STARTUP, () => {
   const eventKeyboardPairs = {
     p: events.START_STOP_PLAY_BUTTON_PRESS,
+    l: events.LISTEN_RECORDING_BUTTON_PRESS,
     r: events.START_STOP_RECORD_BUTTON_PRESS,
     s: events.SEND_AUDIO_FILE_BUTTON_PRESS,
     g: events.GET_FILE,

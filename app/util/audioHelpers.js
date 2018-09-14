@@ -15,6 +15,21 @@ function recorderOptions(){
   return Object.assign({file: currentFileName}, config.recorderOptions);
 }
 
+const audioSources = {
+  received: 'received',
+  recorded: 'recorded'
+}
+
+function playerOptions(audioSource){
+  let currentFileName;
+  if (audioSource === audioSources.recorded) {
+    currentFileName = config.audioOutFileNames[`${stateStore.currentConnection}Send`];
+  } else {
+    console.log('this is not yet right. It is based off the recorded thing');
+    currentFileName = config.audioOutFileNames[`${stateStore.currentConnection}Send`];
+  }
+  return Object.assign({filename: currentFileName}, config.playerOptions);
+}
 
 module.exports.toggleStartStopRecording = () => {
   if (audioProcessIsRunning()) {
@@ -26,12 +41,17 @@ module.exports.toggleStartStopRecording = () => {
 
 module.exports.toggleListenRecording = () => {
   console.log('lets listen to the current recording');
+  if (audioProcessIsRunning()) {
+    stopAudioProcesses();
+  } else if (stateStore.recorder !== 'recording'){
+    player.startPlaying(playerOptions(audioSources.recorded));
+  }
 }
 
 module.exports.toggleStartStopPlaying = () => {
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
   } else if (stateStore.recorder !== 'recording'){
-    player.startPlaying(config.playerOptions);
+    player.startPlaying(playerOptions(audioSources.received));
   }
 };
