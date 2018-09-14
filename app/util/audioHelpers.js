@@ -10,13 +10,23 @@ function stopAudioProcesses() {
   recorder.stopRecording();
 }
 
+function recorderOptions(){
+  const currentFileName = config.audioOutFileNames[`${stateStore.currentConnection}Send`];
+  return Object.assign({file: currentFileName}, config.recorderOptions);
+}
+
+
 module.exports.toggleStartStopRecording = () => {
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
   } else if (stateStore.player !== 'playing'){
-    recorder.startRecording(config.recorderOptions);
+    recorder.startRecording(recorderOptions());
   }
 };
+
+module.exports.toggleListenRecording = () => {
+  console.log('lets listen to the current recording');
+}
 
 module.exports.toggleStartStopPlaying = () => {
   if (audioProcessIsRunning()) {

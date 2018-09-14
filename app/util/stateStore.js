@@ -1,19 +1,19 @@
-const config = require('../util/config');
-const eventBus = require('../util/eventBus');
+const config = require('./config');
+const eventBus = require('./eventBus');
 
 // the current state for all entities - the setting here defines initial state
 // for caching, try adding fetching and setting state to env var
 const stateStore = {
   player: 'notPlaying',
   recorder: 'notRecording',
-  currentConnection: 'a'
+  currentConnection: 'slot1'
 }
 
 // possible states for all entities
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
-  currentConnection: ['a', 'b', 'c', 'd', 'e']
+  currentConnection: ['slot1', 'slot2', 'slot3', 'slot4', 'slot5']
 }
 
 // items whose state is being tracked
@@ -23,13 +23,9 @@ const entities = {
   currentConnection: 'currentConnection'
 }
 
-const directions = config.directions || {
-  forward: 'forward',
-  back: 'back'
-}
+const directions = config.directions;
 
 function change(entity, direction, force) {
-  console.log('args: ',arguments)
   const nextState = force ? force : getNextState(entity, direction);
   stateStore[entity] = nextState;
   console.log(`new state for ${entity} - it will now be ${nextState}`);

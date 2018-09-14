@@ -1,6 +1,6 @@
 const eventBus = require('../util/eventBus');
 const config = require('../util/config');
-const { toggleStartStopRecording, toggleStartStopPlaying } = require('../util/audioHelpers');
+const { toggleStartStopRecording, toggleStartStopPlaying, toggleListenRecording } = require('../util/audioHelpers');
 const { sendDeviceMessage, downloadFile, uploadFile, updateDeviceState } = require('../util/sendReceiveHelpers');
 const { change, entities } = require('../util/stateStore');
 
@@ -8,6 +8,7 @@ const events = config.events;
 
 function init() {
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
+  eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SCROLL_CONNECTION_SELECT, e => { 
     if (e && config.directions[e]) {

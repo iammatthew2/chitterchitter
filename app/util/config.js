@@ -3,14 +3,11 @@ let topLevelDirectory = path.dirname(require.main.filename);
 topLevelDirectory = topLevelDirectory.replace('/app/test', '');
 
 const audioOutPath = path.join(topLevelDirectory, 'audio', 'created');
-const audioInPath = path.join(topLevelDirectory, 'audio', 'received');
 
 const IS_DEBUG = true;
 
 const AUDIO_FILES = {
   audioOut: path.join(audioOutPath, 'out.wav'),
-  audioInA: path.join(audioOutPath, 'dummy.wav'),
-  audioInB: path.join(audioInPath, 'audioInB')
 };
 
 module.exports = {
@@ -36,12 +33,20 @@ module.exports = {
     channels: '1',
     debug: IS_DEBUG,
     exitOnSilence: 6,
-    file: AUDIO_FILES.audioOut,
     fileType: 'wav'
-  }, 
+  },
+  audioOutFileNames: {
+    slot1Send: 'ygvbhuj.wav',
+    slot2Send: '34543id.wav',
+    slot3Send: 'gbgb23f.wav',
+    slot4Send: 'dcd3d2m.wav',
+    slot5Send: 'l08kmii.wav'
+  },
+  filesReadyToSendUp: [],
   hardware: {
     buttons: {
       startStopRecording: 31,
+      startStopListenRecording: 29,
       startStopPlaying: 40,
       sendAudioFile: 36
     },
@@ -60,6 +65,7 @@ module.exports = {
   },
   events: {
     START_STOP_RECORD_BUTTON_PRESS: 'startStopRecordButtonPress',
+    LISTEN_RECORDING_BUTTON_PRESS: 'startStopListenRecordingButtonPress',
     PLAYER_STOPPED: 'playerStopped',
     PLAYER_STARTED: 'playerStarted',
     RECORDER_STOPPED: 'recorderStopped',
