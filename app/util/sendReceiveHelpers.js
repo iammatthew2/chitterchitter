@@ -21,6 +21,9 @@ qrxTwin = {
 */
 
 const filename = 'dummyUpload.wav';
+const filename2 = 'end.wav';
+const filename3 = 'end2.wav';
+const filename4 = 'playPart1.wav';
 
 
 const sendDeviceMessageContent = {
@@ -40,7 +43,7 @@ module.exports.downloadFile = () => iotHubInterface.iotHubActions.download();
 
 
 module.exports.uploadFile = () => {
-  iotHubInterface.iotHubActions.upload(filename);
+  iotHubInterface.iotHubActions.upload([filename, filename2, filename3, filename4]);
 }
 
 module.exports.updateDeviceState = () => {

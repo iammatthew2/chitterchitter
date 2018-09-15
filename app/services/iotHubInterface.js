@@ -10,6 +10,14 @@ function defaultAction(){
   console.log('iotHub connection not yet complete');
 }
 
+function uploadCb(error){
+  if (error) {
+      console.error('Error uploading file: ' + err.toString());
+  } else {
+      console.log('File uploaded');
+  }
+}
+
 const iotHubActions = {
   updateDeviceState: defaultAction,
   sendMesssage: ({messageText, sendToDeviceId, audioFile, sendFromDeviceId}) => {
@@ -20,7 +28,7 @@ const iotHubActions = {
       audioFile
     }));
   
-    client.sendEvent(completeMessage, function (err) {
+    client.sendEvent(completeMessage, (err) => {
       if (err) {
         console.error('send error: ' + err.toString());
       } else {
@@ -29,23 +37,21 @@ const iotHubActions = {
     })
   },
 
-  upload: (filename) => fs.stat(filename, function (err, stats) {
-    const rr = fs.createReadStream(filename);
-    client.uploadToBlob(filename, rr, stats.size, function (err) {
-        if (err) {
-            console.error(chalk.red('Error uploading file: ' + err.toString()));
-        } else {
-            console.log(chalk.green('File uploaded'));
-        }
+  upload: (files) => {
+    files.forEach((file) => {
+      fs.stat(file, (err, stats) => {
+        const rr = fs.createReadStream(file);
+        client.uploadToBlob(file, rr, stats.size, () => uploadCb(err));
+      })
     });
-  }),
+  },
 
   download: () => {
     const https = require('https');
     const fs = require('fs');
     
     const file = fs.createWriteStream('latestDownload.wav');
-    const request = https.get('https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav', function(response) {
+    https.get('https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav', (response) => {
       console.log(chalk.magenta('file downloaded'));
       response.pipe(file);
     });

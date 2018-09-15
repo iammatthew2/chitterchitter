@@ -20,9 +20,9 @@ module.exports.appStartUp = () => {
   const eventManager = require('./services/eventManager');
   eventManager.init();
   
-  console.log('ChitterChitter is up and running');
-
   const config = require('./util/config');
   const eventBus = require('./util/eventBus');
+  console.log('Emitting application startup');
+
   eventBus.emit(config.events.APPLICATION_STARTUP);
 }
