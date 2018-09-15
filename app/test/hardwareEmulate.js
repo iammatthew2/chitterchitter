@@ -19,12 +19,15 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     m: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.back }
   }
 
-  
-
   const validInputs = Object.keys(eventKeyboardPairs);
   
   readline.emitKeypressEvents(process.stdin);
-  process.stdin.setRawMode(true);
+
+  if (process.stdin.setRawMode) {
+    process.stdin.setRawMode(true);
+  } else {
+    console.log('Unable to emulate key press - no TTY');
+  }
   
   console.log('Here are the valid keyboard options:');
   console.log(eventKeyboardPairs);
