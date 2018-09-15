@@ -5,17 +5,10 @@ const chalk = require('chalk');
 const connectionString = process.env.AZURE_IOT_CONNECTION_STRING;
 const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
 const fs = require('fs');
+const util = require('util');
 
 function defaultAction(){
   console.log('iotHub connection not yet complete');
-}
-
-function uploadCb(error){
-  if (error) {
-      console.error('Error uploading file: ' + err.toString());
-  } else {
-      console.log('File uploaded');
-  }
 }
 
 const iotHubActions = {
@@ -37,12 +30,27 @@ const iotHubActions = {
     })
   },
 
+
   upload: (files) => {
+    const fsStatAsync = util.promisify(fs.stat);
+    const clientUploadToBlobAsync = util.promisify(client.uploadToBlob.bind(client));
+    
+    let fileUploadPromises = [];
+
     files.forEach((file) => {
-      fs.stat(file, (err, stats) => {
+      fileUploadPromises.push(
+      fsStatAsync(file)
+      .then((stats) => {
         const rr = fs.createReadStream(file);
-        client.uploadToBlob(file, rr, stats.size, () => uploadCb(err));
+        return clientUploadToBlobAsync(file, rr, stats.size);
       })
+      .then(() =>console.log('File uploaded'))
+      .catch(err => console.error(`[Error]: ${err}`))
+      )
+    });
+
+    Promise.all(fileUploadPromises).then(() => {
+      console.log('all files are up');
     });
   },
 
