@@ -11,6 +11,10 @@ module.exports = {
     mockDelay: 1000,
     executeQue: false
   },
+  deviceStates: {
+    newDevice: 'newDevice',
+    ready: 'ready'
+  },
   defaultThrottleRate: 500,
   playerOptions: {
     gain: 10,
