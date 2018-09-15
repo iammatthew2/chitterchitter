@@ -13,10 +13,13 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     s: events.SEND_AUDIO_FILE_BUTTON_PRESS,
     g: events.GET_FILE,
     u: events.UPDATE_DEVICE_STATE,
+    t: events.SYNC_PROCESS,
     c: events.SEND_DEVICE_MESSAGE,
     k: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.forward },
     m: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.back }
   }
+
+  
 
   const validInputs = Object.keys(eventKeyboardPairs);
   

@@ -1,6 +1,11 @@
 module.exports.appStartUp = () => {
   console.log('Initializing ChitterChitter');
-  console.log(`Node version: ${process.version}`);
+
+  if (process.version.split('.')[0] !== 'v10') {
+    console.log(`Problem - Node version: ${process.version}`);
+    process.exit();
+  }
+
   require('dotenv').config();
 
   console.log('Loading iot hub and connecting');
@@ -21,4 +26,3 @@ module.exports.appStartUp = () => {
   const eventBus = require('./util/eventBus');
   eventBus.emit(config.events.APPLICATION_STARTUP);
 }
-

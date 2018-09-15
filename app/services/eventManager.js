@@ -1,5 +1,7 @@
 const eventBus = require('../util/eventBus');
 const config = require('../util/config');
+const syncProcess = require('./syncProcess');
+
 const { toggleStartStopRecording, toggleStartStopPlaying, toggleListenRecording } = require('../util/audioHelpers');
 const { sendDeviceMessage, downloadFile, uploadFile, updateDeviceState } = require('../util/sendReceiveHelpers');
 const { change, entities } = require('../util/stateStore');
@@ -7,6 +9,8 @@ const { change, entities } = require('../util/stateStore');
 const events = config.events;
 
 function init() {
+  eventBus.on(events.APPLICATION_STARTUP, () => syncProcess.readFromStorage());
+  eventBus.on(events.SYNC_PROCESS, () => syncProcess.readFromStorage());
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);

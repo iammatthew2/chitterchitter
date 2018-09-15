@@ -29,11 +29,11 @@ module.exports = {
     fileType: 'wav'
   },
   audioOutFileNames: {
-    slot1Send: 'ygvbhuj.wav',
-    slot2Send: '34543id.wav',
-    slot3Send: 'gbgb23f.wav',
-    slot4Send: 'dcd3d2m.wav',
-    slot5Send: 'l08kmii.wav'
+    slot1Send: '',
+    slot2Send: '',
+    slot3Send: '',
+    slot4Send: '',
+    slot5Send: ''
   },
   filesReadyToSendUp: [],
   hardware: {
@@ -67,6 +67,7 @@ module.exports = {
     START_STOP_PLAY_BUTTON_PRESS: 'startStopPlayButtonPress',
     SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress',
     UPDATE_DEVICE_STATE: 'updateDeviceState',
+    SYNC_PROCESS: 'syncProcess',
     SEND_DEVICE_MESSAGE: 'sendDeviceMessage',
     SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
