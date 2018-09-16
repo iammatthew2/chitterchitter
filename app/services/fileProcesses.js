@@ -1,13 +1,22 @@
+const fs = require('fs');
+const promisify = require('util').promisify;
 const storage = require('node-persist');
 const config = require('../util/config');
 
+const fsUnlinkAsync = promisify(fs.unlink);
 const deviceIsReady = config.deviceStates.ready;
 const deviceStateStorageKey = 'deviceState';
-const init = async () => {
-   if (!storage.defaultInstance) {
+
+async function init() {
+  if (!storage.defaultInstance) {
     await storage.init();
   }
-};
+  storage.getItem(deviceStateStorageKey).then((stateValue) => {
+    if (stateValue !== deviceIsReady) {
+      newDeviceSetup();
+    }
+  });
+}
 
 function dumbRandomStringMaker() {
   var text = "";
@@ -17,14 +26,18 @@ function dumbRandomStringMaker() {
   return text;
 }
 
-async function newDeviceSetup(){
-  console.log('Setting up new device...');
-  const listOfFiles = Object.keys(config.audioOutFileNames)
-  let requests = listOfFiles.map((item) => {
+function assignNewNamesForFiles(files) {
+  return files.map((item) => {
     const generatedFileName = `${dumbRandomStringMaker()}.wav`;
     console.log(`... ${item} will be set as ${generatedFileName}`);
-    storage.setItem(item,generatedFileName);
+    return storage.setItem(item, generatedFileName);
   });
+}
+
+async function newDeviceSetup(){
+  console.log('Setting up new device...');
+  const listOfFiles = Object.keys(config.audioOutFileNames);
+  let requests = assignNewNamesForFiles(listOfFiles);
   await Promise.all(requests)
     .then(() => {
       console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
@@ -41,13 +54,19 @@ function _readSlotsFromStorage() {
   });
 }
 
+// function deleteFiles(files) {
+//   let deleteFilesProms = [];
+//   files.forEach(() => {
+//     deleteFilesProms.push(fsUnlinkAsync(file));
+//   });
+//   Promise.all(deleteFilesProms).then(() => {
+//     console.log('Files successfully deleted');
+//   });
+
+// }
+
 module.exports.readFromStorage = async () => {
   init();
-  storage.getItem(deviceStateStorageKey).then((stateValue) => {
-    if (stateValue === deviceIsReady) {
-      _readSlotsFromStorage();
-    } else {
-      newDeviceSetup().then(_readSlotsFromStorage)
-    }
-  });
+  _readSlotsFromStorage();
+
 }

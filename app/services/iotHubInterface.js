@@ -1,11 +1,12 @@
 const Mqtt = require('azure-iot-device-mqtt').Mqtt;
 const Message = require('azure-iot-device').Message;
 const DeviceClient = require('azure-iot-device').Client
-const chalk = require('chalk');
 const connectionString = process.env.AZURE_IOT_CONNECTION_STRING;
 const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
 const fs = require('fs');
-const util = require('util');
+const promisify = require('util').promisify;
+const fsStatAsync = promisify(fs.stat);
+const clientUploadToBlobAsync = promisify(client.uploadToBlob.bind(client));
 
 function defaultAction(){
   console.log('iotHub connection not yet complete');
@@ -32,9 +33,6 @@ const iotHubActions = {
 
 
   upload: (files) => {
-    const fsStatAsync = util.promisify(fs.stat);
-    const clientUploadToBlobAsync = util.promisify(client.uploadToBlob.bind(client));
-    
     let fileUploadPromises = [];
 
     files.forEach((file) => {
@@ -60,7 +58,7 @@ const iotHubActions = {
     
     const file = fs.createWriteStream('latestDownload.wav');
     https.get('https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav', (response) => {
-      console.log(chalk.magenta('file downloaded'));
+      console.log('file downloaded');
       response.pipe(file);
     });
   }
@@ -75,9 +73,9 @@ const iotHub = {
         iotHubActions.updateDeviceState = (obj) => {
           twin.properties.reported.update(obj, (err) => {
             if (err) {
-              console.error(chalk.red('Could not update twin'));
+              console.error('Could not update twin');
             } else {
-              console.log(chalk.green('Twin: Sent reported properties'));
+              console.log('Twin: Sent reported properties');
             }
           });
         }
