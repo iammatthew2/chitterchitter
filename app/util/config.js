@@ -13,7 +13,7 @@ module.exports = {
   },
   deviceStates: {
     newDevice: 'newDevice',
-    ready: 'ready'
+    ready: 'ready',
   },
   defaultThrottleRate: 500,
   playerOptions: {
@@ -75,6 +75,8 @@ module.exports = {
     SEND_DEVICE_MESSAGE: 'sendDeviceMessage',
     SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
-    GET_FILE: 'getFile'
+    GET_FILE: 'getFile',
+    DEV_KILL_FILE_STORAGE: 'devKillFileStorage',
+    SCHEDULE_MIDNIGHT: 'schedule_midnight'
   }
 }

@@ -16,6 +16,7 @@
     "azure-iot-device-mqtt": "^1.7.3",
     "azure-storage": "^2.8.0",
     "chalk": "^2.4.1",
+    "cron": "^1.4.1",
     "dotenv": "^5.0.0",
     "mic": "^2.1.2",
     "node-persist": "^3.0.1",

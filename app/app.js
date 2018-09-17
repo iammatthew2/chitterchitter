@@ -8,11 +8,11 @@ module.exports.appStartUp = () => {
 
   require('dotenv').config();
 
-  console.log('Loading iot hub and connecting');
+  console.log('Loading iot hub interface');
   const iotHubInterface = require('./services/iotHubInterface');
   iotHubInterface.connect();
 
-  console.log('Loading hardware');
+  console.log('Loading hardware interface');
   const hardwareInterface = require('./modules/hardwareInterface');
   hardwareInterface.init();
 
@@ -20,9 +20,16 @@ module.exports.appStartUp = () => {
   const eventManager = require('./services/eventManager');
   eventManager.init();
   
+  console.log('Loading file system interface');
+  const fileProcesses = require('./services/fileProcesses');
+  fileProcesses.init();
+
+  console.log('Scheduling midnight cron job event emitter');
+  const cronJobs = require('./services/cronJobs');
+  cronJobs.scheduleMidnightEvent();
+
+  console.log('Emitting application startup');
   const config = require('./util/config');
   const eventBus = require('./util/eventBus');
-  console.log('Emitting application startup');
-
   eventBus.emit(config.events.APPLICATION_STARTUP);
 }

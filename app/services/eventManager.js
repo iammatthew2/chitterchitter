@@ -9,9 +9,10 @@ const { change, entities } = require('../util/stateStore');
 const events = config.events;
 
 function init() {
-  eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readFromStorage());
-  eventBus.on(events.SYNC_PROCESS, () => fileProcesses.readFromStorage());
-  eventBus.on(events.DEV_KILL_FILE_STORAGE, () => fileProcesses.readFromStorage());
+  eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readSlotsFromStorage());
+  eventBus.on(events.SYNC_PROCESS, () => test.setupMidnightEvent());
+  eventBus.on(events.SCHEDULE_MIDNIGHT, () => fileProcesses.deleteFiles('[files]'));
+  eventBus.on(events.DEV_KILL_FILE_STORAGE, () => fileProcesses.killStorage());
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);

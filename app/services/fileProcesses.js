@@ -18,6 +18,10 @@ async function init() {
   });
 }
 
+async function killStorage(){
+  await storage.clear();
+}
+
 function dumbRandomStringMaker() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -42,10 +46,12 @@ async function newDeviceSetup(){
     .then(() => {
       console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
       storage.setItem(deviceStateStorageKey, deviceIsReady)
+    }).then(() => {
+      readSlotsFromStorage();
     });
   }
 
-function _readSlotsFromStorage() {
+function readSlotsFromStorage() {
   storage.forEach(async function(datum) {
     if (datum.key.includes('slot')) {
       console.log(`setting config.audioOutFileNames.${datum.key} to '${datum.value}'`);
@@ -54,19 +60,19 @@ function _readSlotsFromStorage() {
   });
 }
 
-// function deleteFiles(files) {
-//   let deleteFilesProms = [];
-//   files.forEach(() => {
-//     deleteFilesProms.push(fsUnlinkAsync(file));
-//   });
-//   Promise.all(deleteFilesProms).then(() => {
-//     console.log('Files successfully deleted');
-//   });
+function deleteFiles(files) {
+  let deleteFilesProms = [];
+  files.forEach(() => {
+    deleteFilesProms.push(fsUnlinkAsync(file));
+  });
+  Promise.all(deleteFilesProms).then(() => {
+    console.log('Files successfully deleted');
+  });
+}
 
-// }
-
-module.exports.readFromStorage = async () => {
-  init();
-  _readSlotsFromStorage();
-
+module.exports = {
+  init,
+  readSlotsFromStorage,
+  deleteFiles,
+  killStorage
 }
