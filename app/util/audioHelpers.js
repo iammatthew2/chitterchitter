@@ -1,9 +1,10 @@
 const config = require('./config');
 const player = require('../modules/play');
 const recorder = require('../modules/record');
-const { stateStore } = require('../util/stateStore');
+const { appState } = require('./appStateStore');
+const { deviceState } = require('./deviceStateStore');
 
-const audioProcessIsRunning = () => stateStore.recorder === 'recording' || stateStore.player === 'playing';
+const audioProcessIsRunning = () => appState.recorder === 'recording' || appState.player === 'playing';
 
 function stopAudioProcesses() {
   player.stopPlaying();
@@ -11,8 +12,8 @@ function stopAudioProcesses() {
 }
 
 function recorderOptions(){
-  
-  const currentFileName = config.audioOutFileNames[`${stateStore.currentConnection}Send`];
+  debugger;
+  const currentFileName = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
   console.log('the currentFileName is: ', currentFileName)
   return Object.assign({file: currentFileName}, config.recorderOptions);
 }
@@ -25,10 +26,10 @@ const audioSources = {
 function playerOptions(audioSource){
   let currentFileName;
   if (audioSource === audioSources.recorded) {
-    currentFileName = config.audioOutFileNames[`${stateStore.currentConnection}Send`];
+    currentFileName = condeviceStatefig.audioOutFileNames[`${appState.currentConnection}Send`];
   } else {
     console.log('this is not yet right. It is based off the recorded thing');
-    currentFileName = config.audioOutFileNames[`${stateStore.currentConnection}Send`];
+    currentFileName = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
   }
   return Object.assign({filename: currentFileName}, config.playerOptions);
 }
@@ -36,7 +37,7 @@ function playerOptions(audioSource){
 module.exports.toggleStartStopRecording = () => {
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
-  } else if (stateStore.player !== 'playing'){
+  } else if (appState.player !== 'playing'){
     recorder.startRecording(recorderOptions());
   }
 };
@@ -45,7 +46,7 @@ module.exports.toggleListenRecording = () => {
   console.log('lets listen to the current recording');
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
-  } else if (stateStore.recorder !== 'recording'){
+  } else if (appState.recorder !== 'recording'){
     player.startPlaying(playerOptions(audioSources.recorded));
   }
 }
@@ -53,7 +54,7 @@ module.exports.toggleListenRecording = () => {
 module.exports.toggleStartStopPlaying = () => {
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
-  } else if (stateStore.recorder !== 'recording'){
+  } else if (appState.recorder !== 'recording'){
     player.startPlaying(playerOptions(audioSources.received));
   }
 };

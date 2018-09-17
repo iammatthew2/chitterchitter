@@ -1,9 +1,14 @@
+/**
+ * The App State Store manages state for the current app instance.
+ * Settings here will be reset on device reset or reboot.
+ */
+
 const config = require('./config');
 const eventBus = require('./eventBus');
 
 // the current state for all entities - the setting here defines initial state
 // for caching, try adding fetching and setting state to env var
-const stateStore = {
+const appState = {
   player: 'notPlaying',
   recorder: 'notRecording',
   currentConnection: 'slot1'
@@ -27,7 +32,7 @@ const directions = config.directions;
 
 function change(entity, direction, force) {
   const nextState = force ? force : getNextState(entity, direction);
-  stateStore[entity] = nextState;
+  appState[entity] = nextState;
   console.log(`new state for ${entity} - it will now be ${nextState}`);
   eventBus.emit(config.events.STATE_CHANGED);
 }
@@ -43,7 +48,7 @@ function getNextState(entity, direction = directions.forward) {
   const shouldMoveForward = direction === directions.forward;
   const itemOptions = stateStatusOptions[entity];
   const lengthFromZero = itemOptions.length -1;
-  const currentIndex = itemOptions.indexOf(stateStore[entity]);
+  const currentIndex = itemOptions.indexOf(appState[entity]);
   let newIndex = shouldMoveForward ? currentIndex + 1 : currentIndex -1;
 
   if (newIndex < 0) {
@@ -57,10 +62,10 @@ function getNextState(entity, direction = directions.forward) {
   }
 
   if (config.dev.isDebug) {
-    console.log(`stateStore is changing ${entity} state to ${itemOptions[newIndex]}`);
+    console.log(`appState is changing ${entity} state to ${itemOptions[newIndex]}`);
   }
   
   return itemOptions[newIndex];
 }
 
-module.exports = { change, entities, stateStore };
+module.exports = { change, entities, appState };

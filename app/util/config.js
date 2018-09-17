@@ -32,14 +32,6 @@ module.exports = {
     exitOnSilence: 6,
     fileType: 'wav'
   },
-  audioOutFileNames: {
-    slot1Send: '',
-    slot2Send: '',
-    slot3Send: '',
-    slot4Send: '',
-    slot5Send: ''
-  },
-  filesReadyToSendUp: [],
   hardware: {
     buttons: {
       startStopRecording: 31,

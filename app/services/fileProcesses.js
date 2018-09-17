@@ -2,6 +2,7 @@ const fs = require('fs');
 const promisify = require('util').promisify;
 const storage = require('node-persist');
 const config = require('../util/config');
+const { deviceState } = require('../util/deviceStateStore');
 
 const fsUnlinkAsync = promisify(fs.unlink);
 const deviceIsReady = config.deviceStates.ready;
@@ -40,7 +41,7 @@ function assignNewNamesForFiles(files) {
 
 async function newDeviceSetup(){
   console.log('Setting up new device...');
-  const listOfFiles = Object.keys(config.audioOutFileNames);
+  const listOfFiles = Object.keys(deviceState.audioOutFileNames);
   let requests = assignNewNamesForFiles(listOfFiles);
   await Promise.all(requests)
     .then(() => {
@@ -54,8 +55,8 @@ async function newDeviceSetup(){
 function readSlotsFromStorage() {
   storage.forEach(async function(datum) {
     if (datum.key.includes('slot')) {
-      console.log(`setting config.audioOutFileNames.${datum.key} to '${datum.value}'`);
-      config.audioOutFileNames[datum.key] = datum.value;
+      console.log(`setting deviceState.audioOutFileNames.${datum.key} to '${datum.value}'`);
+      deviceState.audioOutFileNames[datum.key] = datum.value;
     }
   });
 }
