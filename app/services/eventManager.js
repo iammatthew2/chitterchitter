@@ -11,7 +11,6 @@ const events = config.events;
 
 function init() {
   eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readSlotsFromStorage());
-  eventBus.on(events.SYNC_PROCESS, () => test.setupMidnightEvent());
   eventBus.on(events.SCHEDULE_MIDNIGHT, () => {
     uploadFile();
     fileProcesses.deleteFiles('[files]');

@@ -3,22 +3,29 @@
  * Settings here will be cached on device reboot.
  */
 
- function addToSendQue(selectedSlot) {
-   debugger;
-   deviceState.filesReadyToSendUp.push(deviceState.audioOutFileNames[`${selectedSlot}Send`]);
-   console.log(`The ${selectedSlot} was added to the que - que: ${deviceState.filesReadyToSendUp}`);
+function addToSendQue(selectedSlot) {
+  if (!deviceState.filesReadyToSendUp.includes(selectedSlot)) {
+    deviceState.filesReadyToSendUp.push(
+      deviceState.audioOutFileNames[`${selectedSlot}Send`]
+    );
+    console.log(
+      `The ${selectedSlot} was added to the que - que: ${
+        deviceState.filesReadyToSendUp
+      }`
+    );
   }
+}
 
- const deviceState =   {
-   audioOutFileNames: {
+const deviceState = {
+  deviceId: '',
+  audioOutFileNames: {
     slot1Send: '',
     slot2Send: '',
     slot3Send: '',
     slot4Send: '',
     slot5Send: ''
   },
-  filesReadyToSendUp: [],
-}
+  filesReadyToSendUp: []
+};
 
-
-module.exports = { deviceState, addToSendQue }
+module.exports = { deviceState, addToSendQue };

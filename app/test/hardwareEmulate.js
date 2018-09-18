@@ -13,7 +13,6 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     s: events.SEND_AUDIO_FILE_BUTTON_PRESS,
     g: events.GET_FILE,
     u: events.UPDATE_DEVICE_STATE,
-    t: events.SYNC_PROCESS,
     c: events.SEND_DEVICE_MESSAGE,
     x: events.DEV_KILL_FILE_STORAGE,
     k: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.forward },
