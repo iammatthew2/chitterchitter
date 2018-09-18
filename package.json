@@ -6,7 +6,7 @@
   "author": "Matthew Villeneuve",
   "license": "MIT",
   "scripts": {
-    "run": "node app/test/hardwareEmulate.js"
+    "em": "node app/test/hardwareEmulate.js"
   },
   "engines": {
     "node": ">=10.0.0"

@@ -12,7 +12,6 @@ function stopAudioProcesses() {
 }
 
 function recorderOptions(){
-  debugger;
   const currentFileName = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
   console.log('the currentFileName is: ', currentFileName)
   return Object.assign({file: currentFileName}, config.recorderOptions);

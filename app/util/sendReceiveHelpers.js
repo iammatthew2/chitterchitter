@@ -35,17 +35,12 @@ const sendDeviceMessageContent = {
 const myTempDeviceID = 'abc123';
 sendDeviceMessageContent[`audioFromDevice${myTempDeviceID}`] = 'hashedFileName';
 
-module.exports.sendDeviceMessage = () => {
-  iotHubInterface.iotHubActions.sendMesssage(sendDeviceMessageContent);
-}
+dummyFileName = 'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
 
-module.exports.downloadFile = () => iotHubInterface.iotHubActions.download();
+module.exports.sendDeviceMessage = () => iotHubInterface.sendMesssage(sendDeviceMessageContent);
 
+module.exports.downloadFile = () => iotHubInterface.download(dummyFileName);
 
-module.exports.uploadFile = () => {
-  iotHubInterface.iotHubActions.upload([filename, filename2, filename3, filename4]);
-}
+module.exports.uploadFile = () => iotHubInterface.upload([filename, filename2, filename3, filename4]);
 
-module.exports.updateDeviceState = () => {
-  iotHubInterface.iotHubActions.updateDeviceState({ narf: 'this is new' })
-}
+module.exports.updateDeviceState = () => iotHubInterface.updateDeviceState({ narf: 'this is new' });
