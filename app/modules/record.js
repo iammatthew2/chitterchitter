@@ -41,7 +41,9 @@ let timer;
 module.exports = {
   startRecording: function(options){
     player.startPlaying(config.preRecordPlayerOptions);
+    debugger;
     timer = setTimeout(() => {
+      debugger;
       setupRecordingInstance(options);
       micInstance.start();
     }, 1820);

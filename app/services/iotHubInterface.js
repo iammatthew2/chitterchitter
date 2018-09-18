@@ -16,19 +16,19 @@ function configureTwin(receivedTwin) {
 }
 
 function handleDeviceTwinEvents() {
-  twin.on("properties.desired.thing", thing => {
-    console.log("Setting thing to thing");
+  twin.on('properties.desired.thing', thing => {
+    console.log('Setting thing to thing');
     eventBus.emit(config.events.thing);
   });
 
-  twin.on("properties.desired.something.nested", delta => {
+  twin.on('properties.desired.something.nested', delta => {
     if (delta.onething || delta.otherthig) {
       console.log(
-        "Configuring minimum temperature: " +
+        'Configuring minimum temperature: ' +
           twin.properties.desired.components.climate.minTemperature
       );
       console.log(
-        "Configuring maximum temperture: " +
+        'Configuring maximum temperture: ' +
           twin.properties.desired.components.climate.maxTemperature
       );
 
@@ -51,10 +51,8 @@ function sendReportedProperties(reportedPropertiesPatch) {
   });
 }
 
-const iotHubActions = {
-
+module.exports = {
   connect() {
-    // Connect to the IoT hub.
     client.open(function(err) {
       client.getTwin(function(err, receivedTwin) {
         configureTwin(receivedTwin);
@@ -97,7 +95,7 @@ const iotHubActions = {
     });
   },
 
-  upload: files => {
+  upload: (files) => {
     let fileUploadPromises = [];
 
     files.forEach(file => {
@@ -117,13 +115,13 @@ const iotHubActions = {
     });
   },
 
-  download: () => {
+  download: (fileName) => {
     const https = require("https");
     const fs = require("fs");
 
     const file = fs.createWriteStream("latestDownload.wav");
     https.get(
-      "https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav",
+      `https://chitterstorage2.blob.core.windows.net/iot-hub-container/${fileName}`,
       response => {
         console.log("file downloaded");
         response.pipe(file);
@@ -131,6 +129,3 @@ const iotHubActions = {
     );
   }
 };
-
-
-module.exports = iotHubActions;

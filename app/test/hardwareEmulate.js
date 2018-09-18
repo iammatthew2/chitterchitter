@@ -48,5 +48,5 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     }
   });
 });
-
 require('../app').appStartUp();
+
