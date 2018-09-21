@@ -9,7 +9,7 @@ module.exports = {
   //       throw err;
   //     } else {
   //       console.log('Twin state reported');
-  //     }    
+  //     }
   //   });
   // },
 
@@ -59,5 +59,5 @@ module.exports = {
 
   download: () => {
     return Promise.resolve();
-  }
+  },
 };

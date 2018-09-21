@@ -2,7 +2,7 @@ const config = require('../app/util/config');
 const eventBus = require('../app/util/eventBus');
 const recorder = require('../app/modules/record');
 const player = require('../app//modules/play');
-const {downloadFile} = require('../app/util/sendReceiveHelpers');
+const { downloadFile } = require('../app/util/sendReceiveHelpers');
 jest.mock('../app/services/iotHubInterface');
 
 const events = config.events;

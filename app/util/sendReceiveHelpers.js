@@ -30,19 +30,23 @@ const sendDeviceMessageContent = {
   messageText: 'this is the new msg Obj',
   sendToDeviceId: 'abc123', // twin slot1
   sendFromDeviceId: 'abc123',
-  audioFile: 'someFile' //twin slot1Send
-}
+  audioFile: 'someFile', // twin slot1Send
+};
 const myTempDeviceID = 'abc123';
 sendDeviceMessageContent[`audioFromDevice${myTempDeviceID}`] = 'hashedFileName';
 
-dummyFileName = 'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
+const dummyFileName =
+  'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
 
-module.exports.sendDeviceMessage = () => iotHubInterface.sendMesssage(sendDeviceMessageContent);
+module.exports.sendDeviceMessage = () =>
+  iotHubInterface.sendMesssage(sendDeviceMessageContent);
 
 module.exports.downloadFile = () => iotHubInterface.download(dummyFileName)
     .then(() => console.log('successful download'))
-    .catch((e) => console.log(`problem with the download ${e}`));
+    .catch(e => console.log(`problem with the download ${e}`));
 
-module.exports.uploadFile = () => iotHubInterface.upload([filename, filename2, filename3, filename4]);
+module.exports.uploadFile = () =>
+  iotHubInterface.upload([filename, filename2, filename3, filename4]);
 
-module.exports.updateDeviceState = () => iotHubInterface.updateDeviceState({ narf: 'this is new' });
+module.exports.updateDeviceState = () =>
+  iotHubInterface.updateDeviceState({ narf: 'this is new' });

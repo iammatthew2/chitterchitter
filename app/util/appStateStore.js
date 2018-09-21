@@ -11,25 +11,31 @@ const eventBus = require('./eventBus');
 const appState = {
   player: 'notPlaying',
   recorder: 'notRecording',
-  currentConnection: 'slot1'
-}
+  currentConnection: 'slot1',
+};
 
 // possible states for all entities
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
-  currentConnection: ['slot1', 'slot2', 'slot3', 'slot4', 'slot5']
-}
+  currentConnection: ['slot1', 'slot2', 'slot3', 'slot4', 'slot5'],
+};
 
 // items whose state is being tracked
 const entities = {
   player: 'player',
   recorder: 'recorder',
-  currentConnection: 'currentConnection'
-}
+  currentConnection: 'currentConnection',
+};
 
 const directions = config.directions;
 
+/**
+ * Update the state
+ * @param {*} entity
+ * @param {*} direction
+ * @param {*} force
+ */
 function change(entity, direction, force) {
   const nextState = force ? force : getNextState(entity, direction);
   appState[entity] = nextState;
@@ -38,12 +44,13 @@ function change(entity, direction, force) {
 }
 
 /**
- * Given a entity, get the next state from an array of options
+ * Given an entity, get the next state from an array of options
  * We treat the array as circular so reaching the end of state
  * options means we start back at the beginning.
- * @param {*} entity
- * @param {*} direction 
- */
+  * @param {*} entity
+  * @param {*} direction
+  * @return {Array}
+  */
 function getNextState(entity, direction = directions.forward) {
   const shouldMoveForward = direction === directions.forward;
   const itemOptions = stateStatusOptions[entity];
@@ -64,7 +71,7 @@ function getNextState(entity, direction = directions.forward) {
   if (config.dev.isDebug) {
     console.log(`appState is changing ${entity} state to ${itemOptions[newIndex]}`);
   }
-  
+
   return itemOptions[newIndex];
 }
 

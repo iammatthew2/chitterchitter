@@ -6,10 +6,14 @@ const config = require('../util/config');
 const { buttons, lights } = config.hardware;
 const events = config.events;
 
+/* eslint-disable no-unused-vars */
+/**
+ * Very rough version of an rotary encoder util
+ */
 function rotaryDialWatcher() {
   // try this: https://github.com/andrewn/raspi-rotary-encoder
 
-/**
+  /**
 var raspi = require('raspi');
 var RotaryEncoder = require('raspi-rotary-encoder').RotaryEncoder;
 
@@ -27,29 +31,33 @@ raspi.init(function() {
   const dir = config.directions;
   let cache = 0;
   const encoder = {};
-  encoder.on('change', (e) => {
-    eventBus.emit(events.SCROLL_CONNECTION_SELECT, e.val > cache ? dir.forward : dir.back);
+  encoder.on('change', e => {
+    eventBus.emit(events.SCROLL_CONNECTION_SELECT,
+      e.val > cache ? dir.forward : dir.back);
     cache = e.val;
   });
 }
 
-hardware =  {
+const hardware = {
   init() {
     // open all the light pins
     const lightPins = Object.keys(lights).map(i => lights[i]);
-    lightPins.forEach((pin) => rpio.open(pin, rpio.OUTPUT));
+    lightPins.forEach(pin => rpio.open(pin, rpio.OUTPUT));
 
     // set all light pins as output and set to off
-    lightPins.forEach((pin) => rpio.open(pin, rpio.OUTPUT));
-    lightPins.forEach((pin) => rpio.write(pin, rpio.LOW));
+    lightPins.forEach(pin => rpio.open(pin, rpio.OUTPUT));
+    lightPins.forEach(pin => rpio.write(pin, rpio.LOW));
 
     // open all button pins
     const buttonPins = Object.keys(buttons).map(i => buttons[i]);
-    buttonPins.forEach((pin) => rpio.open(pin, rpio.INPUT, rpio.PULL_UP));
-    
-    rpioHelpers.safePoll(buttons.startStopRecording, () => eventBus.emit(events.START_STOP_RECORD_BUTTON_PRESS));
-    rpioHelpers.safePoll(buttons.startStopPlaying, () => eventBus.emit(events.START_STOP_PLAY_BUTTON_PRESS));
-    rpioHelpers.safePoll(buttons.sendAudioFile, () => eventBus.emit(events.SEND_AUDIO_FILE_BUTTON_PRESS));
+    buttonPins.forEach(pin => rpio.open(pin, rpio.INPUT, rpio.PULL_UP));
+
+    rpioHelpers.safePoll(buttons.startStopRecording, () =>
+      eventBus.emit(events.START_STOP_RECORD_BUTTON_PRESS));
+    rpioHelpers.safePoll(buttons.startStopPlaying, () =>
+      eventBus.emit(events.START_STOP_PLAY_BUTTON_PRESS));
+    rpioHelpers.safePoll(buttons.sendAudioFile, () =>
+      eventBus.emit(events.SEND_AUDIO_FILE_BUTTON_PRESS));
   },
 
   toggleLightArray(lightArray = [], turnOn = true) {
@@ -57,12 +65,12 @@ hardware =  {
   },
 
   toggleSingleLight(light, turnOn) {
-    toggleLightArray([light], turnOn);
+    this.toggleLightArray([light], turnOn);
   },
 
   iterateThroughLightArray(lightArray, startAllOn = false) {
-    toggleLightArray(lightArray, startAllOn);
-  }
-}
+    this.toggleLightArray(lightArray, startAllOn);
+  },
+};
 
 module.exports = hardware;

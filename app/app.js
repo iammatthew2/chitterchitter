@@ -19,7 +19,7 @@ module.exports.appStartUp = () => {
   console.log('Loading event manager');
   const eventManager = require('./services/eventManager');
   eventManager.init();
-  
+
   console.log('Loading file system interface');
   const fileProcesses = require('./services/fileProcesses');
   fileProcesses.init();
@@ -32,4 +32,4 @@ module.exports.appStartUp = () => {
   const config = require('./util/config');
   const eventBus = require('./util/eventBus');
   eventBus.emit(config.events.APPLICATION_STARTUP);
-}
+};

@@ -9,7 +9,7 @@ module.exports = {
     isMock: true,
     isDebug: IS_DEBUG,
     mockDelay: 1000,
-    executeQue: false
+    executeQue: false,
   },
   deviceStates: {
     newDevice: 'newDevice',
@@ -18,39 +18,39 @@ module.exports = {
   defaultThrottleRate: 500,
   playerOptions: {
     gain: 10,
-    debug: IS_DEBUG
+    debug: IS_DEBUG,
   },
   preRecordPlayerOptions: {
-    filename: path.join(topLevelDirectory,'startRecordingPlease.wav'),
+    filename: path.join(topLevelDirectory, 'startRecordingPlease.wav'),
     gain: 8,
-    debug: IS_DEBUG
+    debug: IS_DEBUG,
   },
   recorderOptions: {
     rate: '16000',
     channels: '1',
     debug: IS_DEBUG,
     exitOnSilence: 6,
-    fileType: 'wav'
+    fileType: 'wav',
   },
   hardware: {
     buttons: {
       startStopRecording: 31,
       startStopListenRecording: 29,
       startStopPlaying: 40,
-      sendAudioFile: 36
+      sendAudioFile: 36,
     },
     rotaryDial: {
       pwr: 'not sure how this works',
-      clk: 'whatever'
+      clk: 'whatever',
     },
     lights: {
       green: 15,
-      red: 16
-    }
+      red: 16,
+    },
   },
   directions: {
     forward: 'forward',
-    back: 'back'
+    back: 'back',
   },
   events: {
     START_STOP_RECORD_BUTTON_PRESS: 'startStopRecordButtonPress',
@@ -68,6 +68,6 @@ module.exports = {
     APPLICATION_STARTUP: 'applicationStartup',
     GET_FILE: 'getFile',
     DEV_KILL_FILE_STORAGE: 'devKillFileStorage',
-    SCHEDULE_MIDNIGHT: 'schedule_midnight'
-  }
-}
+    SCHEDULE_MIDNIGHT: 'schedule_midnight',
+  },
+};

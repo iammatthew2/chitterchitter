@@ -16,11 +16,11 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     c: events.SEND_DEVICE_MESSAGE,
     x: events.DEV_KILL_FILE_STORAGE,
     k: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.forward },
-    m: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.back }
-  }
+    m: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.back },
+  };
 
   const validInputs = Object.keys(eventKeyboardPairs);
-  
+
   readline.emitKeypressEvents(process.stdin);
 
   if (process.stdin.setRawMode) {
@@ -28,7 +28,7 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
   } else {
     console.log('Unable to emulate key press - no TTY');
   }
-  
+
   console.log('Here are the valid keyboard options:');
   console.log(eventKeyboardPairs);
 
@@ -37,7 +37,7 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
       process.exit();
     } else {
       if (validInputs.includes(str)) {
-        if(typeof eventKeyboardPairs[str] === 'string') {
+        if (typeof eventKeyboardPairs[str] === 'string') {
           console.log(`Keyboard: ${eventKeyboardPairs[str]}`);
           eventBus.emit(eventKeyboardPairs[str]);
         } else {
