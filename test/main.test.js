@@ -1,33 +1,34 @@
 const config = require('../app/util/config');
 const eventBus = require('../app/util/eventBus');
-const { toggleStartStopRecording, toggleStartStopPlaying, toggleListenRecording } = require('../app/util/audioHelpers');
-const player = require('../app//modules/play');
 const recorder = require('../app/modules/record');
+const player = require('../app//modules/play');
+const { sendDeviceMessage, downloadFile, uploadFile, updateDeviceState } = require('../app/util/sendReceiveHelpers');
+jest.mock('../app/services/iotHubInterface');
+
 const events = config.events;
-
-const mockClass =  {
-  eventStartUpMockFn: () => {},
-  eventRecorderStartedFn: () => {}
-};
-
-const eventStartUpSpy = jest.spyOn(mockClass, 'eventStartUpMockFn');
-const eventRecorderStartedSpy = jest.spyOn(mockClass, 'eventRecorderStartedFn');
+jest.spyOn(eventBus, 'emit');
 
 beforeAll(() => {
-  eventBus.on(events.APPLICATION_STARTUP, eventStartUpSpy);
   require('../app/app').appStartUp();
 });
 
-test('Application startup is emitted', () => {
-  expect(eventStartUpSpy).toHaveBeenCalled();
-});
+test('Recorder plays an intro sound, stops playing, records then stops recording', (done) => {
+  eventBus.on(events.RECORDER_STARTED, () => {
+    expect(eventBus.emit).toBeCalledWith(events.PLAYER_STARTED);
+    expect(eventBus.emit).toBeCalledWith(events.PLAYER_STOPPED);
+    recorder.stopRecording();
+  });
 
-test('recorder plays then records', () => {
- eventBus.on(config.events.RECORDER_STARTED, eventRecorderStartedSpy);
-
+  eventBus.on(events.RECORDER_STOPPED, () => done());
   recorder.startRecording(Object.assign({file: 'test.wav'}, config.recorderOptions));
-  debugger;
- jest.runAllTimers();
-  debugger;
-  expect(eventRecorderStartedSpy).toHaveBeenCalled();
 });
+
+test('Player plays and stops playing', (done) => {
+  eventBus.on(events.PLAYER_STARTED, () => done());
+  player.startPlaying(Object.assign({filename: 'test.wav'}, config.playerOptions));
+});
+
+test('iotHub can download file', (done) => {
+  downloadFile().then(done)
+});
+

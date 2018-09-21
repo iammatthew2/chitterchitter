@@ -8,7 +8,7 @@
   "scripts": {
     "em": "node app/test/hardwareEmulate.js",
     "test": "jest --detectOpenHandles --forceExit",
-    "test-dev": "jest --detectOpenHandles --watch"
+    "test-dev": "jest --detectOpenHandles --watch --silent"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -21,7 +21,9 @@
     "cron": "^1.4.1",
     "dotenv": "^5.0.0",
     "mic": "^2.1.2",
+    "node-fetch": "^2.2.0",
     "node-persist": "^3.0.1",
+    "rewire": "^4.0.1",
     "rpio": "^0.9.22",
     "sound-player": "https://github.com/iammatthew2/soundplayer.git",
     "throttleit": "^1.0.0",

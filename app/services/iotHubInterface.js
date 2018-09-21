@@ -1,13 +1,14 @@
-const Mqtt = require("azure-iot-device-mqtt").Mqtt;
-const Message = require("azure-iot-device").Message;
-const DeviceClient = require("azure-iot-device").Client;
-const eventBus = require("../util/eventBus");
+const Mqtt = require('azure-iot-device-mqtt').Mqtt;
+const Message = require('azure-iot-device').Message;
+const DeviceClient = require('azure-iot-device').Client;
+const eventBus = require('../util/eventBus');
 const connectionString = process.env.AZURE_IOT_CONNECTION_STRING;
 const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
-const fs = require("fs");
-const promisify = require("util").promisify;
+const fs = require('fs');
+const promisify = require('util').promisify;
 const fsStatAsync = promisify(fs.stat);
 const clientUploadToBlobAsync = promisify(client.uploadToBlob.bind(client));
+const fetch = require('node-fetch');
 
 let twin = {};
 
@@ -88,9 +89,9 @@ module.exports = {
 
     client.sendEvent(completeMessage, err => {
       if (err) {
-        console.error("send error: " + err.toString());
+        console.error('send error: ' + err.toString());
       } else {
-        console.log("message sent");
+        console.log('message sent');
       }
     });
   },
@@ -105,27 +106,33 @@ module.exports = {
             const rr = fs.createReadStream(file);
             return clientUploadToBlobAsync(file, rr, stats.size);
           })
-          .then(() => console.log("File uploaded"))
+          .then(() => console.log('File uploaded'))
           .catch(err => console.error(`[Error]: ${err}`))
       );
     });
 
     Promise.all(fileUploadPromises).then(() => {
-      console.log("all files are up");
+      console.log('all files are up');
     });
   },
 
   download: (fileName) => {
-    const https = require("https");
-    const fs = require("fs");
-
-    const file = fs.createWriteStream("latestDownload.wav");
-    https.get(
-      `https://chitterstorage2.blob.core.windows.net/iot-hub-container/${fileName}`,
-      response => {
-        console.log("file downloaded");
-        response.pipe(file);
-      }
-    );
+    return fetch(`https://chitterstorage2.blob.core.windows.net/iot-hub-container/${fileName}`)
+    .then(res => {
+      return new Promise((resolve, reject) => {
+        const dest = fs.createWriteStream('testDownload.wav');
+        res.body.pipe(dest);
+        res.body.on('error', err => {
+          reject(err);
+        });
+        dest.on('finish', () => {
+          console.log('file was downloaded');
+          return resolve();
+        });
+        dest.on('error', err => {
+          reject(err);
+        });
+      });
+    });
   }
 };

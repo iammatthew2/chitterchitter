@@ -10,11 +10,9 @@ playerInstance.on('resume', () => eventBus.emit(config.events.PLAYER_STARTED));
 
 module.exports = {
   startPlaying: (options) => {
-    debugger;
     playerInstance.play(options);
   },
   stopPlaying: () => {
-    debugger;
     if (playerInstance && playerInstance.stop) {
       playerInstance.stop();
     }

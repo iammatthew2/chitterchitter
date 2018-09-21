@@ -39,7 +39,9 @@ dummyFileName = 'https://chitterstorage2.blob.core.windows.net/iot-hub-container
 
 module.exports.sendDeviceMessage = () => iotHubInterface.sendMesssage(sendDeviceMessageContent);
 
-module.exports.downloadFile = () => iotHubInterface.download(dummyFileName);
+module.exports.downloadFile = () => iotHubInterface.download(dummyFileName)
+    .then(() => console.log('successful download'))
+    .catch((e) => console.log(`problem with the download ${e}`));
 
 module.exports.uploadFile = () => iotHubInterface.upload([filename, filename2, filename3, filename4]);
 

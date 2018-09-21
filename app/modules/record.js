@@ -7,6 +7,7 @@ const player = require('../modules/play');
 let micInstance;
 let micInputStream;
 let outputFileStream;
+let timer;
 
 function attachListeners(stream){
   stream.on('startComplete', () => {
@@ -36,17 +37,24 @@ function setupRecordingInstance(options) {
   }
 }
 
-let timer;
+function _startRecording(options) {
+  setupRecordingInstance(options);
+  micInstance.start();
+}
+
+/**
+ * Wrap setTimeout for testing
+ * @param {*} cb
+ */
+function delayCall(cb) {
+  timer = setTimeout(cb, 1820);
+}
 
 module.exports = {
   startRecording: function(options){
     player.startPlaying(config.preRecordPlayerOptions);
-    debugger;
-    timer = setTimeout(() => {
-      debugger;
-      setupRecordingInstance(options);
-      micInstance.start();
-    }, 1820);
+    const fncArg = () => _startRecording(options);
+    delayCall(fncArg);
   },
 
   stopRecording: function(){
