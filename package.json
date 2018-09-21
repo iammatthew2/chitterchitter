@@ -1,14 +1,21 @@
 {
   "name": "chitterchitter",
   "version": "0.1.0",
-  "description": "a node client to send/receive audio messages from a azure object storage service",
+  "description": "a node client to send/receive audio messages from an azure object storage service",
   "main": "index.js",
   "author": "Matthew Villeneuve",
   "license": "MIT",
   "scripts": {
     "em": "node app/test/hardwareEmulate.js",
-    "test": "jest --detectOpenHandles --forceExit",
-    "test-dev": "jest --detectOpenHandles --watch --silent"
+    "test": "jest --detectOpenHandles --forceExit --silent",
+    "test-dev": "jest --detectOpenHandles --watch --silent",
+    "lint": "node_modules/.bin/eslint  -c .eslintrc.js . --ext .js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint",
+      "pre-push": "yarn test && yarn lint"
+    }
   },
   "engines": {
     "node": ">=10.0.0"
@@ -17,7 +24,6 @@
     "azure-iot-device": "^1.7.3",
     "azure-iot-device-mqtt": "^1.7.3",
     "azure-storage": "^2.8.0",
-    "chalk": "^2.4.1",
     "cron": "^1.4.1",
     "dotenv": "^5.0.0",
     "mic": "^2.1.2",
@@ -25,12 +31,12 @@
     "node-persist": "^3.0.1",
     "rpio": "^0.9.22",
     "sound-player": "https://github.com/iammatthew2/soundplayer.git",
-    "throttleit": "^1.0.0",
-    "yargs": "^11.0.0"
+    "throttleit": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^5.6.0",
     "eslint-config-google": "^0.10.0",
+    "husky": "^1.0.0-rc.14",
     "jest": "^23.6.0"
   }
 }
