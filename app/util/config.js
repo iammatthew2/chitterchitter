@@ -78,6 +78,8 @@ module.exports = {
     APPLICATION_STARTUP: 'applicationStartup',
     GET_FILE: 'getFile',
     DEV_KILL_FILE_STORAGE: 'devKillFileStorage',
+    DEV_DIRECT_UPLOAD: 'devDirectUpload',
     SCHEDULE_MIDNIGHT: 'schedule_midnight',
+
   },
 };

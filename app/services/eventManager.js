@@ -5,7 +5,7 @@ const fileProcesses = require('./fileProcesses');
 
 const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
-const { sendDeviceMessage, downloadFile, uploadFile,
+const { sendDeviceMessage, downloadFiles, uploadFilesSequence,
   updateDeviceState } = require('../util/sendReceiveHelpers');
 const { change, entities, appState } = require('../util/appStateStore');
 
@@ -16,10 +16,8 @@ const events = config.events;
  */
 function init() {
   eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readSlotsFromStorage());
-  eventBus.on(events.SCHEDULE_MIDNIGHT, () => {
-    uploadFile();
-    fileProcesses.deleteFiles('[files]');
-  });
+  eventBus.on(events.SCHEDULE_MIDNIGHT, () => uploadFilesSequence());
+  eventBus.on(events.DEV_DIRECT_UPLOAD, () => uploadFilesSequence());
   eventBus.on(events.DEV_KILL_FILE_STORAGE, () => fileProcesses.killStorage());
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
@@ -32,7 +30,7 @@ function init() {
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
     deviceState.addToSendQue(appState.currentConnection);
   });
-  eventBus.on(events.GET_FILE, downloadFile);
+  eventBus.on(events.GET_FILE, downloadFiles);
   eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);
   eventBus.on(events.SEND_DEVICE_MESSAGE, sendDeviceMessage);
   eventBus.on(events.PLAYER_STOPPED, () => change(entities.player, null, 'notPlaying'));

@@ -57,6 +57,30 @@ function sendReportedProperties(reportedPropertiesPatch) {
   });
 }
 
+/**
+ *
+ * @param {Array} - [source file name, local name to be applied]
+ * @return {Promise}
+ */
+function download([source, local]) {
+  return fetch(source).then(res => {
+    return new Promise((resolve, reject) => {
+      const dest = fs.createWriteStream(local);
+      res.body.pipe(dest);
+      res.body.on('error', err => {
+        reject(err);
+      });
+      dest.on('finish', () => {
+        console.log('file was downloaded');
+        return resolve();
+      });
+      dest.on('error', err => {
+        reject(err);
+      });
+    });
+  });
+}
+
 module.exports = {
   connect() {
     client.open(function(err) {
@@ -101,6 +125,10 @@ module.exports = {
     });
   },
 
+  /**
+   * @param {Array} files
+   * @return {Promise}
+   */
   upload: files => {
     let fileUploadPromises = [];
 
@@ -116,29 +144,16 @@ module.exports = {
       );
     });
 
-    Promise.all(fileUploadPromises).then(() => {
-      console.log('all files are up');
-    });
+    return Promise.all(fileUploadPromises);
   },
 
-  download: fileName => {
-    return fetch(
-        `https://chitterstorage2.blob.core.windows.net/iot-hub-container/${fileName}`)
-        .then(res => {
-          return new Promise((resolve, reject) => {
-            const dest = fs.createWriteStream('testDownload.wav');
-            res.body.pipe(dest);
-            res.body.on('error', err => {
-              reject(err);
-            });
-            dest.on('finish', () => {
-              console.log('file was downloaded');
-              return resolve();
-            });
-            dest.on('error', err => {
-              reject(err);
-            });
-          });
-        });
+  /**
+   *
+   * @param {*} files - [['sourceName', 'localName'], ['sourceName', 'localName']]
+   * @return {Promise}
+   */
+  batchDownload: files => {
+    const downloadsPromises = [];
+    return files.forEach(fileInfo => downloadsPromises.push(download(fileInfo)));
   },
 };
