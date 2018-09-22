@@ -25,6 +25,16 @@ module.exports = {
     gain: 8,
     debug: IS_DEBUG,
   },
+  audioInFileNames: {
+    // we do not rename audio in to make it less likely that
+    // a bug would cause us to preserve the file when a new file is downloaded
+    // from for a slot
+    slot1In: 'slot1In',
+    slot2In: 'slot2In',
+    slot3In: 'slot3In',
+    slot4In: 'slot4In',
+    slot5In: 'slot5In',
+  },
   recorderOptions: {
     rate: '16000',
     channels: '1',

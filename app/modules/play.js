@@ -9,7 +9,13 @@ playerInstance.on('play', () => eventBus.emit(config.events.PLAYER_STARTED));
 playerInstance.on('resume', () => eventBus.emit(config.events.PLAYER_STARTED));
 
 module.exports = {
-  startPlaying: options => playerInstance.play(options),
+  startPlaying: options => {
+    playerInstance.play(options);
+    return new Promise((resolve, reject) => {
+      playerInstance.on('complete', resolve);
+      playerInstance.on('stop', () => reject('player stopped normally'));
+    });
+  },
   stopPlaying: () => {
     if (playerInstance && playerInstance.stop) {
       playerInstance.stop();

@@ -13,10 +13,8 @@ beforeAll(() => {
   require('../app/app').appStartUp();
 });
 
-test('Recorder plays an intro sound, stops playing, records then stops', done => {
+test('Recorder starts and stops', done => {
   eventBus.on(events.RECORDER_STARTED, () => {
-    expect(eventBus.emit).toBeCalledWith(events.PLAYER_STARTED);
-    expect(eventBus.emit).toBeCalledWith(events.PLAYER_STOPPED);
     recorder.stopRecording();
   });
 
