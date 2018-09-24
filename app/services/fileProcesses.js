@@ -3,7 +3,6 @@ const promisify = require('util').promisify;
 const storage = require('node-persist');
 const config = require('../util/config');
 const { deviceState } = require('../util/deviceStateStore');
-
 const fsUnlinkAsync = promisify(fs.unlink);
 const deviceIsReady = config.deviceStates.ready;
 const deviceStateStorageKey = 'deviceState';
@@ -97,7 +96,8 @@ function readSlotsFromStorage() {
  */
 function deleteFiles(files) {
   let deleteFilesProms = [];
-  files.forEach(file => deleteFilesProms.push(fsUnlinkAsync(file)));
+  files.map(filename => `${config.uploadFilePath}${filename}`)
+      .forEach(file => deleteFilesProms.push(fsUnlinkAsync(file)));
   Promise.all(deleteFilesProms).then(() => {
     console.log('Files successfully deleted');
   });

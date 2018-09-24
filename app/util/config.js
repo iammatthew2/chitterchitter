@@ -20,6 +20,8 @@ module.exports = {
     gain: 10,
     debug: IS_DEBUG,
   },
+  uploadFilePath: './audio/created/',
+  downloadFilePath: './audio/received/',
   preRecordPlayerOptions: {
     filename: path.join(topLevelDirectory, 'startRecordingPlease.wav'),
     gain: 8,

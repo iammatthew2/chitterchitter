@@ -57,7 +57,7 @@ module.exports = {
   //   });
   // },
 
-  download: () => {
+  batchDownload: () => {
     return Promise.resolve();
   },
 };

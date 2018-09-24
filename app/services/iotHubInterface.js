@@ -9,6 +9,7 @@ const promisify = require('util').promisify;
 const fsStatAsync = promisify(fs.stat);
 const clientUploadToBlobAsync = promisify(client.uploadToBlob.bind(client));
 const fetch = require('node-fetch');
+const config = require('../util/config');
 
 let twin = {};
 
@@ -58,14 +59,30 @@ function sendReportedProperties(reportedPropertiesPatch) {
 }
 
 /**
+ * Upload file to iot hub associated storage
+ * @param {String} filename
+ * @return {Promise}
+ */
+function upload(filename) {
+  const fileAndPath = `${config.uploadFilePath}${filename}`;
+  return fsStatAsync(fileAndPath)
+      .then(stats => {
+        const rr = fs.createReadStream(fileAndPath);
+        return clientUploadToBlobAsync(filename, rr, stats.size);
+      })
+      .then(() => console.log('File uploaded'))
+      .catch(err => console.error(`[Error]: ${err}`));
+}
+
+/**
  *
  * @param {Array} - [source file name, local name to be applied]
  * @return {Promise}
  */
-function download([source, local]) {
+function download([source, localName]) {
   return fetch(source).then(res => {
     return new Promise((resolve, reject) => {
-      const dest = fs.createWriteStream(local);
+      const dest = fs.createWriteStream(`${config.downloadFilePath}${localName}`);
       res.body.pipe(dest);
       res.body.on('error', err => {
         reject(err);
@@ -125,26 +142,13 @@ module.exports = {
     });
   },
 
-  /**
-   * @param {Array} files
-   * @return {Promise}
-   */
-  upload: files => {
-    let fileUploadPromises = [];
-
-    files.forEach(file => {
-      fileUploadPromises.push(
-          fsStatAsync(file)
-              .then(stats => {
-                const rr = fs.createReadStream(file);
-                return clientUploadToBlobAsync(file, rr, stats.size);
-              })
-              .then(() => console.log('File uploaded'))
-              .catch(err => console.error(`[Error]: ${err}`))
-      );
-    });
-
-    return Promise.all(fileUploadPromises);
+  batchUpload: async files => {
+    const proms = [];
+    for (let i = 0; i < files.length; i++) {
+      proms.push(upload(files[i]));
+      await new Promise(res => setTimeout(res, 500));
+    }
+    return Promise.all(proms);
   },
 
   /**
@@ -152,8 +156,5 @@ module.exports = {
    * @param {*} files - [['sourceName', 'localName'], ['sourceName', 'localName']]
    * @return {Promise}
    */
-  batchDownload: files => {
-    const downloadsPromises = [];
-    return files.forEach(fileInfo => downloadsPromises.push(download(fileInfo)));
-  },
+  batchDownload: files => Promise.all(files.map(download)),
 };
