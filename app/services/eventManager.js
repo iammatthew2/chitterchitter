@@ -21,9 +21,9 @@ function init() {
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
-  eventBus.on(events.SCROLL_CONNECTION_SELECT, e => {
-    if (e && config.directions[e]) {
-      change(entities.currentConnection, config.directions[e]);
+  eventBus.on(events.SCROLL_CONNECTION_SELECT, evt => {
+    if (evt && config.directions[evt]) {
+      change(entities.currentConnection, config.directions[evt]);
     }
   });
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
@@ -34,7 +34,7 @@ function init() {
           deviceStateStore.addToSendQue(file);
           fileProcesses.writeToStorage(deviceStateStore.deviceState.deviceStateQue);
         })
-        .catch(() => console.log('file does not exist'));
+        .catch(err => console.error(`unable to add file (${file}) to que -  ${err}`));
   });
   eventBus.on(events.GET_FILE, downloadFiles);
   eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);

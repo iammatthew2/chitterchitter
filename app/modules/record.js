@@ -3,7 +3,7 @@ const fs = require('fs');
 const eventBus = require('../util/eventBus');
 const config = require('../util/config');
 
-const log = console.log;
+const log = console.info;
 
 let micInstance;
 let micInputStream;

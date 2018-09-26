@@ -53,7 +53,7 @@ module.exports.sendDeviceMessage = () =>
   iotHubInterface.sendMesssage(sendDeviceMessageContent);
 
 module.exports.downloadFiles = () => iotHubInterface.batchDownload(downloadFileSet)
-    .then(() => console.log('all files downloaded'));
+    .then(() => console.info('all files downloaded'));
 
 module.exports.uploadFilesSequence = () => {
   fileProcesses.readSendQue()
@@ -61,7 +61,7 @@ module.exports.uploadFilesSequence = () => {
       .then(fileProcesses.deleteFiles)
       .then(fileProcesses.killSendQue)
       .then(fileProcesses.assignNewNamesForFiles)
-      .catch(err => console.log(`error in uploadFilesSequence: ${err}`));
+      .catch(err => console.error(`error in uploadFilesSequence: ${err}`));
 };
 
 module.exports.updateDeviceState = () =>

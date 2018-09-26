@@ -19,7 +19,7 @@ const readSendQue = () => {
   return storage.getItem('deviceStateQue');
 };
 const killSendQue = () => storage.removeItem('deviceStateQue') && killDeviceStateQue();
-const killDeviceStateQue = () => deviceState.deviceStateQue = {};
+const killDeviceStateQue = () => deviceState.deviceStateQue = [];
 const doesFileExist = file => fsStatAsync(file);
 
 /**
@@ -75,7 +75,7 @@ function dumbRandomStringMaker() {
 function assignNewNamesForFiles() {
   return audioOutFileNameList.map(item => {
     const generatedFileName = `${dumbRandomStringMaker()}.wav`;
-    console.log(`... ${item} will be set as ${generatedFileName}`);
+    deviceState.audioOutFileNames[item] = generatedFileName;
     return storage.setItem(item, generatedFileName);
   });
 }
