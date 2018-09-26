@@ -22,7 +22,8 @@ function stopAudioProcesses() {
  * @return {Object}
  */
 function recorderOptions() {
-  const name = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+  let name = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+  name = `./audio/created/${name}`;
   log('the currentFileName is: ', name);
   return Object.assign({ file: name }, config.recorderOptions);
 }
@@ -46,8 +47,10 @@ function playerOptionGetFileName(audioSource) {
   let file;
   if (audioSource === audioSources.recorded) {
     file = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+    file = `./audio/created/${file}`;
   } else {
-    file = config.audioInFileNames.audioOutFileNames[`${appState.currentConnection}In`];
+    file = config.audioInFileNames[`${appState.currentConnection}In`];
+    file = `./audio/received/${file}`;
   }
   return file;
 }
@@ -79,7 +82,8 @@ module.exports.toggleListenRecording = () => {
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
   } else if (appState.recorder !== 'recording') {
-    player.startPlaying(playerOptions(audioSources.recorded));
+    player.startPlaying(playerOptions(audioSources.recorded))
+        .catch(e => log(`player.startPlaying errored or stopped: ${e}`));
   }
 };
 
@@ -87,6 +91,7 @@ module.exports.toggleStartStopPlaying = () => {
   if (audioProcessIsRunning()) {
     stopAudioProcesses();
   } else if (appState.recorder !== 'recording') {
-    player.startPlaying(playerOptions(audioSources.received));
+    player.startPlaying(playerOptions(audioSources.received))
+        .catch(e => log(`player.startPlaying errored or stopped: ${e}`));
   }
 };

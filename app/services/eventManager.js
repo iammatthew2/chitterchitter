@@ -1,8 +1,7 @@
 const eventBus = require('../util/eventBus');
 const config = require('../util/config');
-const deviceState = require('../util/deviceStateStore');
+const deviceStateStore = require('../util/deviceStateStore');
 const fileProcesses = require('./fileProcesses');
-
 const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
 const { sendDeviceMessage, downloadFiles, uploadFilesSequence,
@@ -12,7 +11,7 @@ const { change, entities, appState } = require('../util/appStateStore');
 const events = config.events;
 
 /**
- * begin watch for events
+ * begin watching for events
  */
 function init() {
   eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readSlotsFromStorage());
@@ -28,7 +27,14 @@ function init() {
     }
   });
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
-    deviceState.addToSendQue(appState.currentConnection);
+    const file =
+      deviceStateStore.deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+    fileProcesses.doesFileExist(`./audio/created/${file}`)
+        .then(() => {
+          deviceStateStore.addToSendQue(file);
+          fileProcesses.writeToStorage(deviceStateStore.deviceState.deviceStateQue);
+        })
+        .catch(() => console.log('file does not exist'));
   });
   eventBus.on(events.GET_FILE, downloadFiles);
   eventBus.on(events.UPDATE_DEVICE_STATE, updateDeviceState);

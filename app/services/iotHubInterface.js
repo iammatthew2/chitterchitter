@@ -68,9 +68,10 @@ function upload(filename) {
   return fsStatAsync(fileAndPath)
       .then(stats => {
         const rr = fs.createReadStream(fileAndPath);
+        console.log(`upload file: ${filename}`);
         return clientUploadToBlobAsync(filename, rr, stats.size);
       })
-      .then(() => console.log('File uploaded'))
+      .then(() => Promise.resolve(filename))
       .catch(err => console.error(`[Error]: ${err}`));
 }
 
@@ -87,13 +88,8 @@ function download([source, localName]) {
       res.body.on('error', err => {
         reject(err);
       });
-      dest.on('finish', () => {
-        console.log('file was downloaded');
-        return resolve();
-      });
-      dest.on('error', err => {
-        reject(err);
-      });
+      dest.on('finish', () => resolve());
+      dest.on('error', err => reject(err));
     });
   });
 }
@@ -144,6 +140,10 @@ module.exports = {
 
   batchUpload: async files => {
     const proms = [];
+    if (!files) {
+      throw new Error('no files to upload');
+    }
+
     for (let i = 0; i < files.length; i++) {
       proms.push(upload(files[i]));
       await new Promise(res => setTimeout(res, 500));

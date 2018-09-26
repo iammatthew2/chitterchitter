@@ -26,7 +26,7 @@ const dummyFileName =
   'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
 
 const sendDeviceMessageContent = {
-  messageText: 'this is the new msg Obj',
+  messageText: 'this is the new msg Obj - yts it is',
   sendToDeviceId: 'abc123', // twin slot1
   sendFromDeviceId: 'abc123',
   audioFile: 'someFile', // twin slot1Send
@@ -48,19 +48,21 @@ const uploadFileSet = [
   'qslot1In.wav',
 ];
 
-
+sendDeviceMessageContent.narfFiles = uploadFileSet;
 module.exports.sendDeviceMessage = () =>
   iotHubInterface.sendMesssage(sendDeviceMessageContent);
 
 module.exports.downloadFiles = () => iotHubInterface.batchDownload(downloadFileSet)
     .then(() => console.log('all files downloaded'));
 
-module.exports.uploadFilesSequence = () => iotHubInterface.batchUpload(uploadFileSet)
-    .then(() => {
-      console.log(`deleting uploaded files now`);
-      fileProcesses.deleteFiles(uploadFileSet);
-    })
-    .catch(err => console.log(`error in uploadFilesSequence: ${err}`));
+module.exports.uploadFilesSequence = () => {
+  fileProcesses.readSendQue()
+      .then(iotHubInterface.batchUpload)
+      .then(fileProcesses.deleteFiles)
+      .then(fileProcesses.killSendQue)
+      .then(fileProcesses.assignNewNamesForFiles)
+      .catch(err => console.log(`error in uploadFilesSequence: ${err}`));
+};
 
 module.exports.updateDeviceState = () =>
-  iotHubInterface.updateDeviceState({ narf: 'this is new' });
+  iotHubInterface.updateDeviceState({ narf: 'crackers! this is new' });

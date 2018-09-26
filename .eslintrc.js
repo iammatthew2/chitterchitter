@@ -11,7 +11,8 @@ module.exports = {
     'new-cap': ["error", { "properties": false }],
     'max-len': ["error", { "code": 90 }],
     'object-curly-spacing': ["error", "always"],
-    'no-console': 'off'
+    'no-console': 'off',
+    'valid-jsdoc': 'off',
   },
 
   "parserOptions": {

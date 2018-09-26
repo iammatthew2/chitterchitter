@@ -6,6 +6,21 @@ const { deviceState } = require('../util/deviceStateStore');
 const fsUnlinkAsync = promisify(fs.unlink);
 const deviceIsReady = config.deviceStates.ready;
 const deviceStateStorageKey = 'deviceState';
+const fsStatAsync = promisify(fs.stat);
+
+const audioOutFileNameList = Object.keys(deviceState.audioOutFileNames);
+
+// TODO: move this whole file into util/deviceStateStore as private methods
+// except for a few methods that should go to something like util/fileHelpers
+
+const killStorage = () => storage.clear();
+const writeToStorage = value => storage.setItem('deviceStateQue', value);
+const readSendQue = () => {
+  return storage.getItem('deviceStateQue');
+};
+const killSendQue = () => storage.removeItem('deviceStateQue') && killDeviceStateQue();
+const killDeviceStateQue = () => deviceState.deviceStateQue = {};
+const doesFileExist = file => fsStatAsync(file);
 
 /**
  * Prepare a new device
@@ -13,8 +28,7 @@ const deviceStateStorageKey = 'deviceState';
  */
 async function newDeviceSetup() {
   console.log('Setting up new device...');
-  const listOfFiles = Object.keys(deviceState.audioOutFileNames);
-  let requests = assignNewNamesForFiles(listOfFiles);
+  let requests = assignNewNamesForFiles();
   await Promise.all(requests)
       .then(() => {
         console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
@@ -41,21 +55,12 @@ async function init() {
 }
 
 /**
- * A dev utility for killing storage
- * Keep this around for remote maintanance
- */
-async function killStorage() {
-  await storage.clear();
-}
-
-/**
  * Just like real crypto but dumber and not safe
  * @return {String}
  */
 function dumbRandomStringMaker() {
   let text = '';
-  let possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 5; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
@@ -65,11 +70,10 @@ function dumbRandomStringMaker() {
 /**
  * We provide names for files that will be recorded. After upload
  * those names are regenerated to keep the flow clear
- * @param {*} files
  * @return {Promise}
  */
-function assignNewNamesForFiles(files) {
-  return files.map(item => {
+function assignNewNamesForFiles() {
+  return audioOutFileNameList.map(item => {
     const generatedFileName = `${dumbRandomStringMaker()}.wav`;
     console.log(`... ${item} will be set as ${generatedFileName}`);
     return storage.setItem(item, generatedFileName);
@@ -97,10 +101,11 @@ function readSlotsFromStorage() {
 function deleteFiles(files) {
   let deleteFilesProms = [];
   files.map(filename => `${config.uploadFilePath}${filename}`)
-      .forEach(file => deleteFilesProms.push(fsUnlinkAsync(file)));
-  Promise.all(deleteFilesProms).then(() => {
-    console.log('Files successfully deleted');
-  });
+      .forEach(file => {
+        console.log(`deleting ${file}`);
+        deleteFilesProms.push(fsUnlinkAsync(file));
+      });
+  return Promise.all(deleteFilesProms);
 }
 
 module.exports = {
@@ -108,4 +113,9 @@ module.exports = {
   readSlotsFromStorage,
   deleteFiles,
   killStorage,
+  writeToStorage,
+  assignNewNamesForFiles,
+  readSendQue,
+  doesFileExist,
+  killSendQue,
 };

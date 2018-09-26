@@ -68,10 +68,6 @@ function getNextState(entity, direction = directions.forward) {
     newIndex = 0;
   }
 
-  if (config.dev.isDebug) {
-    console.log(`appState is changing ${entity} state to ${itemOptions[newIndex]}`);
-  }
-
   return itemOptions[newIndex];
 }
 
