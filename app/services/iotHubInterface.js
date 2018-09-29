@@ -11,36 +11,27 @@ const clientUploadToBlobAsync = promisify(client.uploadToBlob.bind(client));
 const fetch = require('node-fetch');
 const config = require('../util/config');
 
+const events = config.events;
+
 let twin = {};
 
 const configureTwin = receivedTwin => twin = receivedTwin;
 
 /**
+ * Get the last reported data to reconfigure temporal state
+ * {Object} reportedData
+ */
+
+
+/**
  * Fire events based on device twin activity
  */
 function handleDeviceTwinEvents() {
-  twin.on('properties.desired.thing', thing => {
-    console.log('Setting thing to thing');
-    eventBus.emit('config.events.thing');
-  });
-
-  twin.on('properties.desired.something.nested', delta => {
-    if (delta.onething || delta.otherthig) {
-      console.log(
-          `Configuring minimum temperature: ${
-            twin.properties.desired.components.climate.minTemperature}`
-      );
-      console.log(
-          `Configuring maximum temperture: ${
-            twin.properties.desired.components.climate.maxTemperature}`
-      );
-      const reportedPropertiesPatch = {};
-      reportedPropertiesPatch.minTemperature =
-        twin.properties.desired.components.climate.minTemperature;
-      reportedPropertiesPatch.maxTemperature =
-        twin.properties.desired.components.climate.maxTemperature;
-      sendReportedProperties();
-    }
+  twin.on('properties.desired.connections', delta => {
+    eventBus.emit(events.RECEIVED_CLOUD_STATE, delta);
+    //    execute some process that checks if recording was made, delete recording
+    // todo: setup method for sending new properties after the
+    // sendReportedProperties(reportedPropertiesPatch);
   });
 }
 
@@ -100,34 +91,19 @@ module.exports = {
       client.getTwin(function(err, receivedTwin) {
         configureTwin(receivedTwin);
         handleDeviceTwinEvents();
+        eventBus.emit(events.RECEIVED_CLOUD_STATE, receivedTwin.properties.reported);
       });
     });
   },
 
-  updateDeviceState: reportedPropertiesPatch => {
-    twin.properties.reported.update(reportedPropertiesPatch, err => {
-      if (err) {
-        throw err;
-      } else {
-        console.log('Twin state reported');
-      }
-    });
-  },
+  // prob not needed for final product
+  updateDeviceState: sendReportedProperties,
 
-  sendMesssage: ({
-    messageText,
-    sendToDeviceId,
-    audioFile,
-    sendFromDeviceId,
-  }) => {
-    const completeMessage = new Message(
-        JSON.stringify({
-          messageText,
-          sendToDeviceId,
-          sendFromDeviceId,
-          audioFile,
-        })
-    );
+  /**
+   * @param {Object} messageBody
+   */
+  sendMesssage: messageBody => {
+    const completeMessage = new Message(JSON.stringify(messageBody));
 
     client.sendEvent(completeMessage, err => {
       if (err) {

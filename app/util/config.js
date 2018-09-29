@@ -78,10 +78,10 @@ module.exports = {
     SEND_DEVICE_MESSAGE: 'sendDeviceMessage',
     SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
+    RECEIVED_CLOUD_STATE: 'receivedCloudState',
     GET_FILE: 'getFile',
     DEV_KILL_FILE_STORAGE: 'devKillFileStorage',
     DEV_DIRECT_UPLOAD: 'devDirectUpload',
     SCHEDULE_MIDNIGHT: 'schedule_midnight',
-
   },
 };

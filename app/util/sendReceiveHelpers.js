@@ -22,11 +22,8 @@ qrxTwin = {
 */
 
 
-const dummyFileName =
-  'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
-
 const sendDeviceMessageContent = {
-  messageText: 'this is the new msg Obj - yts it is',
+  messageText: 'It is Thusday - 9/27 this is the new msg Obj - yts it is',
   sendToDeviceId: 'abc123', // twin slot1
   sendFromDeviceId: 'abc123',
   audioFile: 'someFile', // twin slot1Send
@@ -34,12 +31,6 @@ const sendDeviceMessageContent = {
 const myTempDeviceID = 'abc123';
 sendDeviceMessageContent[`audioFromDevice${myTempDeviceID}`] = 'hashedFileName';
 
-// source, name
-const downloadFileSet = [
-  [dummyFileName, 'slot1In.wav'],
-  [dummyFileName, 'slot2In.wav'],
-  [dummyFileName, 'slot3In.wav'],
-];
 
 const uploadFileSet = [
   '8g8v1.wav',
@@ -48,9 +39,35 @@ const uploadFileSet = [
   'qslot1In.wav',
 ];
 
+const basePath = 'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/';
+
+const sendMessageContent = {
+  sender: myTempDeviceID,
+  uploadNotifications: [
+    {
+      recipient: 'other',
+      file: 'file',
+    },
+    {
+      recipient: 'other',
+      file: 'file',
+    },
+  ],
+};
+
 sendDeviceMessageContent.narfFiles = uploadFileSet;
 module.exports.sendDeviceMessage = () =>
-  iotHubInterface.sendMesssage(sendDeviceMessageContent);
+  iotHubInterface.sendMesssage(sendMessageContent);
+
+const dummyFileName =
+  'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
+
+// source, name
+const downloadFileSet = [
+  [dummyFileName, 'slot1In.wav'],
+  [dummyFileName, 'slot2In.wav'],
+  [dummyFileName, 'slot3In.wav'],
+];
 
 module.exports.downloadFiles = () => iotHubInterface.batchDownload(downloadFileSet)
     .then(() => console.info('all files downloaded'));
@@ -65,4 +82,11 @@ module.exports.uploadFilesSequence = () => {
 };
 
 module.exports.updateDeviceState = () =>
-  iotHubInterface.updateDeviceState({ narf: 'crackers! this is new' });
+  // stub the initial device setup
+  iotHubInterface.updateDeviceState({ connections: {
+    slot1: 'abc456',
+    slot2: 'abc789',
+    slot3: 'abcx23',
+    slot4: 'def456',
+    slot5: 'ghi789',
+  } });

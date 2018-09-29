@@ -6,7 +6,7 @@ const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
 const { sendDeviceMessage, downloadFiles, uploadFilesSequence,
   updateDeviceState } = require('../util/sendReceiveHelpers');
-const { change, entities, appState } = require('../util/appStateStore');
+const { change, entities, appState, updateConnectionsState } = require('../util/appStateStore');
 
 const events = config.events;
 
@@ -15,17 +15,23 @@ const events = config.events;
  */
 function init() {
   eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readSlotsFromStorage());
+  eventBus.on(events.RECEIVED_CLOUD_STATE, evt => {
+    debugger;
+    if (evt && evt.connections) {
+      change(entities.connections, null, evt.connections);
+    }
+  });
+  eventBus.on(events.SCROLL_CONNECTION_SELECT, evt => {
+    if (evt && config.directions[evt]) {
+      change(entities.currentConnection, config.directions[evt]);
+    }
+  });
   eventBus.on(events.SCHEDULE_MIDNIGHT, () => uploadFilesSequence());
   eventBus.on(events.DEV_DIRECT_UPLOAD, () => uploadFilesSequence());
   eventBus.on(events.DEV_KILL_FILE_STORAGE, () => fileProcesses.killStorage());
   eventBus.on(events.START_STOP_RECORD_BUTTON_PRESS, toggleStartStopRecording);
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
-  eventBus.on(events.SCROLL_CONNECTION_SELECT, evt => {
-    if (evt && config.directions[evt]) {
-      change(entities.currentConnection, config.directions[evt]);
-    }
-  });
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
     const file =
       deviceStateStore.deviceState.audioOutFileNames[`${appState.currentConnection}Send`];

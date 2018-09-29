@@ -12,6 +12,7 @@ const appState = {
   player: 'notPlaying',
   recorder: 'notRecording',
   currentConnection: 'slot1',
+  connections: {},
 };
 
 // possible states for all entities
@@ -26,6 +27,7 @@ const entities = {
   player: 'player',
   recorder: 'recorder',
   currentConnection: 'currentConnection',
+  connections: 'connections',
 };
 
 const directions = config.directions;
@@ -37,6 +39,8 @@ const directions = config.directions;
  * @param {*} force
  */
 function change(entity, direction, force) {
+  // TODO refactor so null is not needed
+  // add change patch feature
   const nextState = force ? force : getNextState(entity, direction);
   appState[entity] = nextState;
   console.log(`new state for ${entity} - it will now be ${nextState}`);
@@ -71,4 +75,12 @@ function getNextState(entity, direction = directions.forward) {
   return itemOptions[newIndex];
 }
 
-module.exports = { change, entities, appState };
+/**
+ * Update the connections state
+ * {Object} - reportedConnections
+ */
+function updateConnectionsState(reportedConnections) {
+  appState.connections = reportedConnections;
+}
+
+module.exports = { change, entities, appState, updateConnectionsState };

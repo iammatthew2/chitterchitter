@@ -15,6 +15,7 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     u: events.UPDATE_DEVICE_STATE,
     a: events.DEV_DIRECT_UPLOAD,
     c: events.SEND_DEVICE_MESSAGE,
+    t: events.RECEIVED_CLOUD_STATE,
     x: events.DEV_KILL_FILE_STORAGE,
     k: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.forward },
     m: { event: events.SCROLL_CONNECTION_SELECT, arg: config.directions.back },
