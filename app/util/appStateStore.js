@@ -4,7 +4,6 @@
  */
 
 const config = require('./config');
-const eventBus = require('./eventBus');
 
 // the current state for all entities - the setting here defines initial state
 // for caching, try adding fetching and setting state to env var
@@ -15,11 +14,11 @@ const appState = {
   connections: {},
 };
 
-// possible states for all entities
+// possible states for all entities that have predefined options
+// These are the states that can be "rotated through" via getNextState()
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
-  currentConnection: ['slot1', 'slot2', 'slot3', 'slot4', 'slot5'],
 };
 
 // items whose state is being tracked
@@ -33,18 +32,39 @@ const entities = {
 const directions = config.directions;
 
 /**
- * Update the state
- * @param {*} entity
+ * Update the state by assigning a specific value, specifying a direction to
+ * move to (in array ['a','b','c'] move from index 2 to 1), or patch an
+ * object by giving a new or updated top-level property
+ * @param {*} entity - required
  * @param {*} direction
- * @param {*} force
+ * @param {*} value
  */
-function change(entity, direction, force) {
-  // TODO refactor so null is not needed
-  // add change patch feature
-  const nextState = force ? force : getNextState(entity, direction);
+function change({ entity, direction, value, patch }) {
+  if (!entity || (!direction && !value && !patch)) {
+    console.error('entity and any of direction, value or patch are required');
+    return;
+  }
+
+  let nextState;
+
+  if (direction) {
+    nextState = getNextState(entity, direction);
+  } else if (value) {
+    nextState = value;
+  } else if (patch) {
+    nextState = getPatchState(entity, patch);
+  }
+
+  console.info(`new state for ${entity} - it will now be ${nextState}`);
   appState[entity] = nextState;
-  console.log(`new state for ${entity} - it will now be ${nextState}`);
-  eventBus.emit(config.events.STATE_CHANGED);
+}
+
+function getPatchState(entity, patch) {
+  const newState = Object.assign({}, appState[entity]);
+  Object.keys(patch).forEach(i => {
+    newState[i] = patch[i];
+  });
+  return newState;
 }
 
 /**
@@ -55,7 +75,7 @@ function change(entity, direction, force) {
   * @param {*} direction
   * @return {Array}
   */
-function getNextState(entity, direction = directions.forward) {
+function getNextState(entity, direction) {
   const shouldMoveForward = direction === directions.forward;
   const itemOptions = stateStatusOptions[entity];
   const lengthFromZero = itemOptions.length -1;
@@ -75,10 +95,6 @@ function getNextState(entity, direction = directions.forward) {
   return itemOptions[newIndex];
 }
 
-/**
- * Update the connections state
- * {Object} - reportedConnections
- */
 function updateConnectionsState(reportedConnections) {
   appState.connections = reportedConnections;
 }

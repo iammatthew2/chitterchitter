@@ -97,6 +97,7 @@ function readSlotsFromStorage() {
 /**
  * Delete an array of files from the device
  * @param {Array} files
+ * @return {Promise}
  */
 function deleteFiles(files) {
   let deleteFilesProms = [];

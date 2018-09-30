@@ -1,4 +1,3 @@
-// $ cat .eslintrc.js 
 module.exports = {
   'env': {
       'node': true,
@@ -12,7 +11,7 @@ module.exports = {
     'max-len': ["error", { "code": 90 }],
     'object-curly-spacing': ["error", "always"],
     'no-console': 'off',
-    'valid-jsdoc': 'off',
+    'require-jsdoc': 'off',
   },
 
   "parserOptions": {
@@ -23,17 +22,5 @@ module.exports = {
     'test': true,
     'beforeAll': true,
     'expect': true,
-      // // Collections
-      // 'Persons': true,
-      // 'Modules': true,
-      
-      // // More stuff
-      // // [...]
-
-      // // Packages
-      // 'lodash': true,
-      // 'i18n': true,
-      // 'moment': true,
-      // 'Messenger': true
   }
 }

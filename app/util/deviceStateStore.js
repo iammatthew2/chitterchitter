@@ -1,7 +1,7 @@
 /**
   * The Device State Store manages state for the device by saving state to disk.
   * Settings here will be cached on device reboot.
-  * @param {*} selectedSlot
+  * @param {*} recordingFileName
   */
 function addToSendQue(recordingFileName) {
   if (!deviceState.deviceStateQue.includes(recordingFileName)) {

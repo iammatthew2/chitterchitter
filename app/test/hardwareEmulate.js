@@ -12,7 +12,6 @@ eventBus.on(events.APPLICATION_STARTUP, () => {
     r: events.START_STOP_RECORD_BUTTON_PRESS,
     s: events.SEND_AUDIO_FILE_BUTTON_PRESS,
     g: events.GET_FILE,
-    u: events.UPDATE_DEVICE_STATE,
     a: events.DEV_DIRECT_UPLOAD,
     c: events.SEND_DEVICE_MESSAGE,
     t: events.RECEIVED_CLOUD_STATE,

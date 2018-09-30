@@ -27,11 +27,8 @@ const configureTwin = receivedTwin => twin = receivedTwin;
  * Fire events based on device twin activity
  */
 function handleDeviceTwinEvents() {
-  twin.on('properties.desired.connections', delta => {
-    eventBus.emit(events.RECEIVED_CLOUD_STATE, delta);
-    //    execute some process that checks if recording was made, delete recording
-    // todo: setup method for sending new properties after the
-    // sendReportedProperties(reportedPropertiesPatch);
+  twin.on('properties.desired', delta => {
+    eventBus.emit(events.RECEIVED_CLOUD_STATE_PATCH, delta);
   });
 }
 
