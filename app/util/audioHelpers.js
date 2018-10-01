@@ -22,7 +22,7 @@ function stopAudioProcesses() {
  * @return {Object}
  */
 function recorderOptions() {
-  let name = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+  let name = deviceState.audioOutFileNames[`${appState.currentConnection}`];
   name = `./audio/created/${name}`;
   log('the currentFileName is: ', name);
   return Object.assign({ file: name }, config.recorderOptions);
@@ -46,7 +46,7 @@ const effectNames = {
 function playerOptionGetFileName(audioSource) {
   let file;
   if (audioSource === audioSources.recorded) {
-    file = deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+    file = deviceState.audioOutFileNames[`${appState.currentConnection}`];
     file = `./audio/created/${file}`;
   } else {
     file = config.audioInFileNames[`${appState.currentConnection}In`];

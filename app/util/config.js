@@ -22,6 +22,7 @@ module.exports = {
   },
   uploadFilePath: './audio/created/',
   downloadFilePath: './audio/received/',
+  baseRemotePath: 'https://chitterstorage2.blob.core.windows.net/iot-hub-container',
   preRecordPlayerOptions: {
     filename: path.join(topLevelDirectory, 'startRecordingPlease.wav'),
     gain: 8,

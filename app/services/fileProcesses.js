@@ -50,6 +50,10 @@ async function init() {
   storage.getItem(deviceStateStorageKey).then(stateValue => {
     if (stateValue !== deviceIsReady) {
       newDeviceSetup();
+    } else {
+      readSendQue().then(i => {
+        deviceState.deviceStateQue = i ? i : [];
+      });
     }
   });
 }
@@ -100,6 +104,9 @@ function readSlotsFromStorage() {
  * @return {Promise}
  */
 function deleteFiles(files) {
+  if (files.length < 1) {
+    throw new Error('no files to upload');
+  }
   let deleteFilesProms = [];
   files.map(filename => `${config.uploadFilePath}${filename}`)
       .forEach(file => {

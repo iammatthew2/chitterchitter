@@ -1,30 +1,36 @@
 const iotHubInterface = require('../services/iotHubInterface');
 const fileProcesses = require('../services/fileProcesses');
+const deviceStateStore = require('./deviceStateStore');
+const appStateStore = require('../util/appStateStore');
+const configs = require('./config');
+const path = require('path');
 
-const myTempDeviceID = 'abc123';
+const deviceId = 'abc123';
 
 const sendMessageContent = {
-  sender: myTempDeviceID,
-  uploadNotifications: [
-    {
-      recipient: 'other',
-      file: 'file',
-    },
-    {
-      recipient: 'other',
-      file: 'file',
-    },
-  ],
+  sender: deviceId,
+  uploaderNotifications: [],
 };
 
+const slotToRemoteFileName = slot =>
+  path.join(configs.baseRemotePath, deviceId, slotToFileName(slot));
+const slotToFileName = slot => deviceStateStore.deviceState.audioOutFileNames[slot];
 
-module.exports.sendDeviceMessage = () =>
-  iotHubInterface.sendMesssage(sendMessageContent);
+function createMessageContent(queuedSlots) {
+  const uploaderInfo = queuedSlots.map(slot => {
+    const fileData = {};
+    fileData.recipient = appStateStore.appState.connections[slot];
+    fileData.file = slotToRemoteFileName(slot);
+    return fileData;
+  });
+
+  sendMessageContent.uploaderNotifications = uploaderInfo;
+  return sendMessageContent;
+}
 
 const dummyFileName =
   'https://chitterstorage2.blob.core.windows.net/iot-hub-container/abc123/out2.wav';
 
-// source, name
 const downloadFileSet = [
   [dummyFileName, 'slot1In.wav'],
   [dummyFileName, 'slot2In.wav'],
@@ -35,9 +41,15 @@ module.exports.downloadFiles = () => iotHubInterface.batchDownload(downloadFileS
     .then(() => console.info('all files downloaded'));
 
 module.exports.uploadFilesSequence = () => {
-  fileProcesses.readSendQue()
-      .then(iotHubInterface.batchUpload)
-      .then(fileProcesses.deleteFiles)
+  const queuedSlots = deviceStateStore.deviceState.deviceStateQue;
+
+  iotHubInterface.batchUpload(queuedSlots.map(slotToFileName))
+      .then(files => {
+        const theContent = createMessageContent(queuedSlots);
+        iotHubInterface.updateDeviceState({ twinContent: theContent });
+        iotHubInterface.sendMesssage({ msgContent: theContent });
+        return fileProcesses.deleteFiles(files);
+      })
       .then(fileProcesses.killSendQue)
       .then(fileProcesses.assignNewNamesForFiles)
       .catch(err => console.error(`error in uploadFilesSequence: ${err}`));

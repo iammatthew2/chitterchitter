@@ -1,12 +1,12 @@
 /**
   * The Device State Store manages state for the device by saving state to disk.
   * Settings here will be cached on device reboot.
-  * @param {*} recordingFileName
+  * @param {*} slotName
   */
-function addToSendQue(recordingFileName) {
-  if (!deviceState.deviceStateQue.includes(recordingFileName)) {
-    deviceState.deviceStateQue.push(recordingFileName);
-    console.log(`added ${recordingFileName} to: ${deviceState.deviceStateQue}`);
+function addToSendQue(slotName) {
+  if (!deviceState.deviceStateQue.includes(slotName)) {
+    deviceState.deviceStateQue.push(slotName);
+    console.log(`added ${slotName} to: ${deviceState.deviceStateQue}`);
   }
 }
 
@@ -16,11 +16,11 @@ const deviceState = {
     // we do rename audio out to make it clear that we are sending out new data
     // files. This is something that might change. Must consider use case of
     // uploading then deleting files
-    slot1Send: '',
-    slot2Send: '',
-    slot3Send: '',
-    slot4Send: '',
-    slot5Send: '',
+    slot1: '',
+    slot2: '',
+    slot3: '',
+    slot4: '',
+    slot5: '',
   },
   deviceStateQue: [],
 };

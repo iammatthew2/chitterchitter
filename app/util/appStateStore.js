@@ -19,6 +19,7 @@ const appState = {
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
+  currentConnection: ['slot1', 'slot2', 'slot3', 'slot4', 'slot5'],
 };
 
 // items whose state is being tracked

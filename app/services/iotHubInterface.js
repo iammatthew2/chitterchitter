@@ -37,11 +37,12 @@ function handleDeviceTwinEvents() {
  * @param {Object} reportedPropertiesPatch
  */
 function sendReportedProperties(reportedPropertiesPatch) {
+  // TODO: promisify reported.update()
   twin.properties.reported.update(reportedPropertiesPatch, err => {
     if (err) {
       throw err;
     } else {
-      console.log('Twin state reported');
+      console.info(`Twin state successfully - patch: ${reportedPropertiesPatch}`);
     }
   });
 }

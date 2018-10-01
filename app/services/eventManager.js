@@ -26,6 +26,7 @@ function init() {
       // todo: delete the old file in this flow
       const patch = {};
       patch[entities.connections] = appState.connections;
+      console.log(`this is the device connections twin patch: ${patch}`);
       updateDeviceState(patch);
     }
   });
@@ -55,10 +56,11 @@ function init() {
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
     // this mess is why both state modules need to be combined
     const file =
-      deviceStateStore.deviceState.audioOutFileNames[`${appState.currentConnection}Send`];
+      deviceStateStore.deviceState.audioOutFileNames[`${appState.currentConnection}`];
     fileProcesses.doesFileExist(`./audio/created/${file}`)
         .then(() => {
-          deviceStateStore.addToSendQue(file);
+          // two calls to preserve state of same entity is weird.
+          deviceStateStore.addToSendQue(appState.currentConnection);
           fileProcesses.writeToStorage(deviceStateStore.deviceState.deviceStateQue);
         })
         .catch(err => console.error(`unable to add file (${file}) to que -  ${err}`));
