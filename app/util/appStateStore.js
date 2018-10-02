@@ -1,6 +1,17 @@
 /**
  * The App State Store manages state for the current app instance.
  * Settings here will be reset on device reset or reboot.
+ *
+ * Items stored here are either regenerated on reboot (reset the current connection
+ * to index zero) or they are populated via an api request to the iot hub ({connections}).
+ *
+ * For those items that are populated via the iot hub, we only need that data when
+ * we are making an api request (we only need to know the {connections} when sending
+ * a message to the hub to notify connected devices of the new file).
+ *
+ * This device should operate normally so long as it can connect to the internet every
+ * now and then.
+ *
  */
 
 const config = require('./config');

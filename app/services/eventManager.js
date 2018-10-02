@@ -66,7 +66,6 @@ function init() {
         .catch(err => console.error(`unable to add file (${file}) to que -  ${err}`));
   });
   eventBus.on(events.GET_FILE, downloadFiles);
-  eventBus.on(events.SEND_DEVICE_MESSAGE, sendDeviceMessage);
 }
 
 module.exports = { init };

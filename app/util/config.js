@@ -75,7 +75,6 @@ module.exports = {
     START_STOP_PLAY_BUTTON_PRESS: 'startStopPlayButtonPress',
     SEND_AUDIO_FILE_BUTTON_PRESS: 'sendAudioFileButtonPress',
     UPDATE_DEVICE_STATE: 'updateDeviceState',
-    SEND_DEVICE_MESSAGE: 'sendDeviceMessage',
     SCROLL_CONNECTION_SELECT: 'scrollConnectionSelect',
     APPLICATION_STARTUP: 'applicationStartup',
     RECEIVED_CLOUD_STATE: 'receivedCloudState',

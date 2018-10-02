@@ -10,19 +10,36 @@ function addToSendQue(slotName) {
   }
 }
 
+function getReceivedSlotState(slot) {
+  return deviceState.receivedFilesStates[slot];
+}
+
+function setReceivedSlotState(slot) {
+  deviceState.receivedFilesStates[slot] = state;
+}
+
 const deviceState = {
-  deviceId: '',
   audioOutFileNames: {
-    // we do rename audio out to make it clear that we are sending out new data
-    // files. This is something that might change. Must consider use case of
-    // uploading then deleting files
+    // TODO: simplify this flow by giving the file a hashed name during file upload
+    // sequence
     slot1: '',
     slot2: '',
     slot3: '',
     slot4: '',
     slot5: '',
   },
+  // plan to keep saving this to disk so connectivity is not required when a user
+  // marks an audio file for upload
   deviceStateQue: [],
+
+  // 'played', 'unplayed', 'empty'
+  receivedFilesStates: {
+    slot1: '',
+    slot2: '',
+    slot3: '',
+    slot4: '',
+    slot5: '',
+  },
 };
 
 module.exports = { deviceState, addToSendQue };
