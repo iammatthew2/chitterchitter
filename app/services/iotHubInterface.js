@@ -50,15 +50,18 @@ function sendReportedProperties(reportedPropertiesPatch) {
 /**
  * Upload file to iot hub associated storage
  * @param {String} filename
+ * @param {String} newName - optional - name to use if renaming the file on upload
  * @return {Promise}
  */
-function upload(filename) {
+function upload(filename, newName) {
   const fileAndPath = `${config.uploadFilePath}${filename}`;
   return fsStatAsync(fileAndPath)
       .then(stats => {
+        const nameOfUploadedFile = newName ? newName : filename;
         const rr = fs.createReadStream(fileAndPath);
-        console.log(`upload file: ${filename}`);
-        return clientUploadToBlobAsync(filename, rr, stats.size);
+        console.log(`upload file: ${filename} as ${nameOfUploadedFile}`);
+
+        return clientUploadToBlobAsync(nameOfUploadedFile, rr, stats.size);
       })
       .then(() => Promise.resolve(filename))
       .catch(err => console.error(`[Error]: ${err}`));
@@ -112,6 +115,9 @@ module.exports = {
     });
   },
 
+  /**
+   * @param {Array} files - [{filename, newName}, {filename, newName}, ...]
+   */
   batchUpload: async files => {
     const proms = [];
     if (!files) {
@@ -119,7 +125,8 @@ module.exports = {
     }
 
     for (let i = 0; i < files.length; i++) {
-      proms.push(upload(files[i]));
+      proms.push(upload(files[i]['slot'], files[i]['name']));
+      // add pause in this loop to throttle our uploads
       await new Promise(res => setTimeout(res, 500));
     }
     return Promise.all(proms);

@@ -4,6 +4,7 @@
   * @param {*} slotName
   */
 function addToSendQue(slotName) {
+  debugger;
   if (!deviceState.deviceStateQue.includes(slotName)) {
     deviceState.deviceStateQue.push(slotName);
     console.log(`added ${slotName} to: ${deviceState.deviceStateQue}`);

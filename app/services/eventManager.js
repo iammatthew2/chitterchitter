@@ -55,9 +55,8 @@ function init() {
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
     // this mess is why both state modules need to be combined
-    const file =
-      deviceStateStore.deviceState.audioOutFileNames[`${appState.currentConnection}`];
-    fileProcesses.doesFileExist(`./audio/created/${file}`)
+    
+    fileProcesses.doesFileExist(`./audio/created/${appState.currentConnection}`)
         .then(() => {
           // two calls to preserve state of same entity is weird.
           deviceStateStore.addToSendQue(appState.currentConnection);

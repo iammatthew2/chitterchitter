@@ -26,17 +26,11 @@ const doesFileExist = file => fsStatAsync(file);
  * Prepare a new device
  * This should only get called for a new or reset device
  */
-async function newDeviceSetup() {
+async function _newDeviceSetup() {
   console.log('Setting up new device...');
-  let requests = assignNewNamesForFiles();
-  await Promise.all(requests)
-      .then(() => {
-        console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
-        storage.setItem(deviceStateStorageKey, deviceIsReady);
-      })
-      .then(() => {
-        readSlotsFromStorage();
-      });
+  console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
+  storage.setItem(deviceStateStorageKey, deviceIsReady)
+      .then(() => readSlotsFromStorage());
 }
 
 /**
@@ -49,7 +43,7 @@ async function init() {
   }
   storage.getItem(deviceStateStorageKey).then(stateValue => {
     if (stateValue !== deviceIsReady) {
-      newDeviceSetup();
+      _newDeviceSetup();
     } else {
       readSendQue().then(i => {
         deviceState.deviceStateQue = i ? i : [];
@@ -62,26 +56,13 @@ async function init() {
  * Just like real crypto but dumber and not safe
  * @return {String}
  */
-function dumbRandomStringMaker() {
+function _dumbRandomStringMaker() {
   let text = '';
   let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 5; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
-}
-
-/**
- * We provide names for files that will be recorded. After upload
- * those names are regenerated to keep the flow clear
- * @return {Promise}
- */
-function assignNewNamesForFiles() {
-  return audioOutFileNameList.map(item => {
-    const generatedFileName = `${dumbRandomStringMaker()}.wav`;
-    deviceState.audioOutFileNames[item] = generatedFileName;
-    return storage.setItem(item, generatedFileName);
-  });
 }
 
 /**
@@ -122,7 +103,6 @@ module.exports = {
   deleteFiles,
   killStorage,
   writeToStorage,
-  assignNewNamesForFiles,
   readSendQue,
   doesFileExist,
   killSendQue,

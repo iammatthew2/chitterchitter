@@ -2,7 +2,6 @@ const config = require('./config');
 const player = require('../modules/play');
 const recorder = require('../modules/record');
 const { appState } = require('./appStateStore');
-const { deviceState } = require('./deviceStateStore');
 
 const log = console.log;
 
@@ -22,8 +21,7 @@ function stopAudioProcesses() {
  * @return {Object}
  */
 function recorderOptions() {
-  let name = deviceState.audioOutFileNames[`${appState.currentConnection}`];
-  name = `./audio/created/${name}`;
+  const name = `./audio/created/${appState.currentConnection}`;
   log('the currentFileName is: ', name);
   return Object.assign({ file: name }, config.recorderOptions);
 }
@@ -46,8 +44,7 @@ const effectNames = {
 function playerOptionGetFileName(audioSource) {
   let file;
   if (audioSource === audioSources.recorded) {
-    file = deviceState.audioOutFileNames[`${appState.currentConnection}`];
-    file = `./audio/created/${file}`;
+    file = `./audio/created/${appState.currentConnection}`;
   } else {
     file = config.audioInFileNames[`${appState.currentConnection}In`];
     file = `./audio/received/${file}`;
