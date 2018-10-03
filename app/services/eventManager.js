@@ -4,7 +4,7 @@ const deviceStateStore = require('../util/deviceStateStore');
 const fileProcesses = require('./fileProcesses');
 const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
-const { sendDeviceMessage, downloadFiles, uploadFilesSequence,
+const { downloadFiles, uploadFilesSequence,
   updateDeviceState } = require('../util/sendReceiveHelpers');
 const { change, entities, appState } = require('../util/appStateStore');
 
@@ -14,7 +14,6 @@ const events = config.events;
  * begin watching for events
  */
 function init() {
-  eventBus.on(events.APPLICATION_STARTUP, () => fileProcesses.readSlotsFromStorage());
   eventBus.on(events.RECEIVED_CLOUD_STATE, evt => {
     if (evt && evt.connections) {
       change({ entity: entities.connections, value: evt.connections });
@@ -59,8 +58,10 @@ function init() {
     fileProcesses.doesFileExist(`./audio/created/${appState.currentConnection}`)
         .then(() => {
           // two calls to preserve state of same entity is weird.
-          deviceStateStore.addToSendQue(appState.currentConnection);
-          fileProcesses.writeToStorage(deviceStateStore.deviceState.deviceStateQue);
+         // deviceStateStore.addToSendQue(appState.currentConnection);
+        console.log('this broken but almost good')
+          change({ entity: entities.deviceStateQue, patch: appState.currentConnection });
+         // fileProcesses.writeToStorage(deviceStateStore.deviceState.deviceStateQue);
         })
         .catch(err => console.error(`unable to add file (${file}) to que -  ${err}`));
   });

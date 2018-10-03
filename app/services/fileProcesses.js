@@ -2,22 +2,16 @@ const fs = require('fs');
 const promisify = require('util').promisify;
 const storage = require('node-persist');
 const config = require('../util/config');
-const { deviceState } = require('../util/deviceStateStore');
+const deviceState = require('../util/appStateStore').appState.deviceStateQue;
 const fsUnlinkAsync = promisify(fs.unlink);
 const deviceIsReady = config.deviceStates.ready;
 const deviceStateStorageKey = 'deviceState';
 const fsStatAsync = promisify(fs.stat);
 
-const audioOutFileNameList = Object.keys(deviceState.audioOutFileNames);
-
-// TODO: move this whole file into util/deviceStateStore as private methods
-// except for a few methods that should go to something like util/fileHelpers
 
 const killStorage = () => storage.clear();
 const writeToStorage = value => storage.setItem('deviceStateQue', value);
-const readSendQue = () => {
-  return storage.getItem('deviceStateQue');
-};
+const readSendQue = () => storage.getItem('deviceStateQue');
 const killSendQue = () => storage.removeItem('deviceStateQue') && killDeviceStateQue();
 const killDeviceStateQue = () => deviceState.deviceStateQue = [];
 const doesFileExist = file => fsStatAsync(file);
@@ -29,8 +23,7 @@ const doesFileExist = file => fsStatAsync(file);
 async function _newDeviceSetup() {
   console.log('Setting up new device...');
   console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
-  storage.setItem(deviceStateStorageKey, deviceIsReady)
-      .then(() => readSlotsFromStorage());
+  storage.setItem(deviceStateStorageKey, deviceIsReady);
 }
 
 /**
@@ -48,33 +41,6 @@ async function init() {
       readSendQue().then(i => {
         deviceState.deviceStateQue = i ? i : [];
       });
-    }
-  });
-}
-
-/**
- * Just like real crypto but dumber and not safe
- * @return {String}
- */
-function _dumbRandomStringMaker() {
-  let text = '';
-  let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 5; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
-/**
- * Get the file names from storage and assign them to the deviceState names
- */
-function readSlotsFromStorage() {
-  storage.forEach(async function(datum) {
-    if (datum.key.includes('slot')) {
-      console.log(
-          `setting deviceState.audioOutFileNames.${datum.key} to '${datum.value}'`
-      );
-      deviceState.audioOutFileNames[datum.key] = datum.value;
     }
   });
 }
@@ -99,7 +65,6 @@ function deleteFiles(files) {
 
 module.exports = {
   init,
-  readSlotsFromStorage,
   deleteFiles,
   killStorage,
   writeToStorage,

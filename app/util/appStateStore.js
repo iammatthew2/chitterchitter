@@ -14,7 +14,8 @@
  *
  */
 
-const config = require('./config');
+const directions = require('./config').directions;
+
 
 // the current state for all entities - the setting here defines initial state
 // for caching, try adding fetching and setting state to env var
@@ -23,10 +24,11 @@ const appState = {
   recorder: 'notRecording',
   currentConnection: 'slot1',
   connections: {},
+  deviceStateQue: [],
 };
 
 // possible states for all entities that have predefined options
-// These are the states that can be "rotated through" via getNextState()
+// These are the states that can be "rotated through" via _getNextState()
 const stateStatusOptions = {
   player: ['playing', 'notPlaying'],
   recorder: ['recording', 'notRecording'],
@@ -39,9 +41,20 @@ const entities = {
   recorder: 'recorder',
   currentConnection: 'currentConnection',
   connections: 'connections',
+  deviceStateQue: 'deviceStateQue',
 };
 
-const directions = config.directions;
+/**
+  * The Device State Store manages state for the device by saving state to disk.
+  * Settings here will be cached on device reboot.
+  * @param {*} slotName
+  */
+ function addToSendQue(slotName) {
+  if (!deviceState.deviceStateQue.includes(slotName)) {
+    deviceState.deviceStateQue.push(slotName);
+    console.log(`added ${slotName} to: ${deviceState.deviceStateQue}`);
+  }
+}
 
 /**
  * Update the state by assigning a specific value, specifying a direction to
@@ -60,22 +73,34 @@ function change({ entity, direction, value, patch }) {
   let nextState;
 
   if (direction) {
-    nextState = getNextState(entity, direction);
+    nextState = _getNextState(entity, direction);
   } else if (value) {
     nextState = value;
   } else if (patch) {
-    nextState = getPatchState(entity, patch);
+    nextState = _getPatchState(entity, patch);
   }
 
   console.info(`new state for ${entity} - it will now be ${nextState}`);
   appState[entity] = nextState;
 }
 
-function getPatchState(entity, patch) {
-  const newState = Object.assign({}, appState[entity]);
-  Object.keys(patch).forEach(i => {
-    newState[i] = patch[i];
-  });
+/**
+ * Create a new entity with the new items patched in
+ * @param {String} entity 
+ * @param {Object or Array} patch - item to add to current entity
+ */
+function _getPatchState(entity, patch) {
+  const entityElement = appState[entity];
+  let newState;
+  if (Array.isArray(entityElement)) {
+    newState = entityElement.slice(0).push(patch);
+  } else {
+    newState = Object.assign({}, entityElement);
+    Object.keys(patch).forEach(i => {
+      newState[i] = patch[i];
+    });
+  }
+  
   return newState;
 }
 
@@ -87,7 +112,7 @@ function getPatchState(entity, patch) {
   * @param {*} direction
   * @return {Array}
   */
-function getNextState(entity, direction) {
+function _getNextState(entity, direction) {
   const shouldMoveForward = direction === directions.forward;
   const itemOptions = stateStatusOptions[entity];
   const lengthFromZero = itemOptions.length -1;
@@ -107,8 +132,6 @@ function getNextState(entity, direction) {
   return itemOptions[newIndex];
 }
 
-function updateConnectionsState(reportedConnections) {
-  appState.connections = reportedConnections;
-}
-
-module.exports = { change, entities, appState, updateConnectionsState };
+// only export our the the current state, the method for updating the state
+// and the set of entity id's that we track
+module.exports = { change, entities, appState };
