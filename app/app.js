@@ -20,10 +20,6 @@ module.exports.appStartUp = () => {
   const eventManager = require('./services/eventManager');
   eventManager.init();
 
-  console.log('Loading file system interface');
-  const fileProcesses = require('./services/fileProcesses');
-  fileProcesses.init();
-
   console.log('Scheduling midnight cron job event emitter');
   const cronJobs = require('./services/cronJobs');
   cronJobs.scheduleMidnightEvent();

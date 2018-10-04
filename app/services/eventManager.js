@@ -20,12 +20,13 @@ function init() {
   });
   eventBus.on(events.RECEIVED_CLOUD_STATE_PATCH, evt => {
     if (evt && evt.connections) {
-      change({ entity: entities.connections, patch: evt.connections });
-      // todo: delete the old file in this flow
-      const patch = {};
-      patch[entities.connections] = appState.connections;
-      console.log(`this is the device connections twin patch: ${patch}`);
-      updateDeviceState(patch);
+      change({ entity: entities.connections, patch: evt.connections })
+          .then(newState => {
+            // todo: delete the old file in this flow
+            const patch = {};
+            patch[entities.connections] = newState;
+            updateDeviceState(patch);
+          });
     }
   });
   eventBus.on(events.SCROLL_CONNECTION_SELECT, evt => {
@@ -52,9 +53,14 @@ function init() {
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
-    fileProcesses.doesFileExist(`./audio/created/${appState.currentConnection}`)
+    const slot = appState.currentConnection;
+    fileProcesses.doesFileExist(`./audio/created/${slot}`)
         .then(() => {
-          change({ entity: entities.deviceStateQue, patch: appState.currentConnection });
+          if (!appState.deviceStateQue.includes(slot)) {
+            change({ entity: entities.deviceStateQue, patch: slot });
+          } else {
+            console.log(`nothing to add to ${appState.deviceStateQue}`);
+          }
         })
         .catch(err => console.error(`eventManager - unable to add file to que: ${err}`));
   });

@@ -14,18 +14,51 @@
  *
  */
 
-const directions = require('./config').directions;
+const storage = require('node-persist');
+const config = require('./config');
 
+const directions = config.directions;
+const deviceIsReady = config.deviceStates.ready;
+const deviceStateStorageKey = 'deviceState';
+
+
+/**
+ * Prepare a new device
+ * This should only get called for a new or reset device
+ */
+async function _newDeviceSetup() {
+  console.log('Setting up new device...');
+  console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
+  storage.setItem(deviceStateStorageKey, deviceIsReady);
+}
+
+/**
+ * Prepare this instance of storage for this app
+ * Called for every run of the application
+ */
+async function _init() {
+  if (!storage.defaultInstance) {
+    await storage.init();
+  }
+  storage.getItem(deviceStateStorageKey).then(stateValue => {
+    if (stateValue !== deviceIsReady) {
+      _newDeviceSetup();
+    } else {
+      storage.getItem(entities.deviceStateQue)
+          .then(i => change({ entity: entities.deviceStateQue, value: [] }));
+    }
+  });
+}
 
 // the current state for all entities - the setting here defines initial state
 // for caching, try adding fetching and setting state to env var
-const appState = {
+const appState = Object.seal({
   player: 'notPlaying',
   recorder: 'notRecording',
   currentConnection: 'slot1',
   connections: {},
   deviceStateQue: [],
-};
+});
 
 // possible states for all entities that have predefined options
 // These are the states that can be "rotated through" via _getNextState()
@@ -43,6 +76,8 @@ const entities = {
   connections: 'connections',
   deviceStateQue: 'deviceStateQue',
 };
+
+const entitiesPreservedOnDisk = [entities.deviceStateQue];
 
 /**
  * Update the state by assigning a specific value, specifying a direction to
@@ -70,6 +105,13 @@ function change({ entity, direction, value, patch }) {
 
   console.info(`new state for ${entity} - it will now be ${nextState}`);
   appState[entity] = nextState;
+
+  if (entitiesPreservedOnDisk.includes(entity)) {
+    return storage.setItem(entity, nextState)
+        .then(Promise.resolve(nextState));
+  } else {
+    return Promise.resolve(nextState);
+  }
 }
 
 /**
@@ -124,4 +166,6 @@ function _getNextState(entity, direction) {
 
 // only export our the the current state, the method for updating the state
 // and the set of entity id's that we track
+
+_init();
 module.exports = { change, entities, appState };

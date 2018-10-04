@@ -1,50 +1,10 @@
 const fs = require('fs');
 const promisify = require('util').promisify;
-const storage = require('node-persist');
 const config = require('../util/config');
-const appState = require('../util/appStateStore').appState;
 const fsUnlinkAsync = promisify(fs.unlink);
-const deviceIsReady = config.deviceStates.ready;
-const deviceStateStorageKey = 'deviceState';
 const fsStatAsync = promisify(fs.stat);
 
-const killStorage = () => storage.clear();
-const writeToStorage = value => storage.setItem('deviceStateQue', value);
-const readSendQue = () => storage.getItem('deviceStateQue');
-const killSendQue = () => storage.removeItem('deviceStateQue') && killAppStateQue();
-// TODO: do not change state outside of appStateStore
-const killAppStateQue = () => appState.deviceStateQue = [];
 const doesFileExist = file => fsStatAsync(file);
-
-/**
- * Prepare a new device
- * This should only get called for a new or reset device
- */
-async function _newDeviceSetup() {
-  console.log('Setting up new device...');
-  console.log(`... setting ${deviceStateStorageKey} as ${deviceIsReady}`);
-  storage.setItem(deviceStateStorageKey, deviceIsReady);
-}
-
-/**
- * Prepare this instance of storage for this app
- * Called for every run of the application
- */
-async function init() {
-  if (!storage.defaultInstance) {
-    await storage.init();
-  }
-  storage.getItem(deviceStateStorageKey).then(stateValue => {
-    if (stateValue !== deviceIsReady) {
-      _newDeviceSetup();
-    } else {
-      readSendQue().then(i => {
-        // TODO: do not change state outside of appStateStore
-        appState.deviceStateQue = i ? i : [];
-      });
-    }
-  });
-}
 
 /**
  * Delete an array of files from the device
@@ -64,12 +24,4 @@ function deleteFiles(files) {
   return Promise.all(deleteFilesProms);
 }
 
-module.exports = {
-  init,
-  deleteFiles,
-  killStorage,
-  writeToStorage,
-  readSendQue,
-  doesFileExist,
-  killSendQue,
-};
+module.exports = { deleteFiles, doesFileExist };
