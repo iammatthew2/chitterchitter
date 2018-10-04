@@ -1,6 +1,5 @@
 const iotHubInterface = require('../services/iotHubInterface');
 const fileProcesses = require('../services/fileProcesses');
-const deviceStateStore = require('./deviceStateStore');
 const appStateStore = require('../util/appStateStore');
 const configs = require('./config');
 const path = require('path');
@@ -61,11 +60,10 @@ module.exports.downloadFiles = () => iotHubInterface.batchDownload(downloadFileS
     .then(() => console.info('all files downloaded'));
 
 module.exports.uploadFilesSequence = () => {
-  const queuedSlots = deviceStateStore.deviceState.deviceStateQue;
+  const queuedSlots = appStateStore.appState.deviceStateQue;
 
   iotHubInterface.batchUpload(queuedSlots.map(slotToSlotAndNamePair))
       .then(files => {
-        debugger;
         const theContent = createMessageContent(queuedSlots);
         iotHubInterface.updateDeviceState({ twinContent: theContent });
         iotHubInterface.sendMesssage({ msgContent: theContent });

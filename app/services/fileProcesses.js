@@ -2,18 +2,18 @@ const fs = require('fs');
 const promisify = require('util').promisify;
 const storage = require('node-persist');
 const config = require('../util/config');
-const deviceState = require('../util/appStateStore').appState.deviceStateQue;
+const appState = require('../util/appStateStore').appState;
 const fsUnlinkAsync = promisify(fs.unlink);
 const deviceIsReady = config.deviceStates.ready;
 const deviceStateStorageKey = 'deviceState';
 const fsStatAsync = promisify(fs.stat);
 
-
 const killStorage = () => storage.clear();
 const writeToStorage = value => storage.setItem('deviceStateQue', value);
 const readSendQue = () => storage.getItem('deviceStateQue');
-const killSendQue = () => storage.removeItem('deviceStateQue') && killDeviceStateQue();
-const killDeviceStateQue = () => deviceState.deviceStateQue = [];
+const killSendQue = () => storage.removeItem('deviceStateQue') && killAppStateQue();
+// TODO: do not change state outside of appStateStore
+const killAppStateQue = () => appState.deviceStateQue = [];
 const doesFileExist = file => fsStatAsync(file);
 
 /**
@@ -39,7 +39,8 @@ async function init() {
       _newDeviceSetup();
     } else {
       readSendQue().then(i => {
-        deviceState.deviceStateQue = i ? i : [];
+        // TODO: do not change state outside of appStateStore
+        appState.deviceStateQue = i ? i : [];
       });
     }
   });
@@ -52,7 +53,7 @@ async function init() {
  */
 function deleteFiles(files) {
   if (files.length < 1) {
-    throw new Error('no files to upload');
+    throw new Error('deleteFiles() - no files provided');
   }
   let deleteFilesProms = [];
   files.map(filename => `${config.uploadFilePath}${filename}`)

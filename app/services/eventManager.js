@@ -1,6 +1,5 @@
 const eventBus = require('../util/eventBus');
 const config = require('../util/config');
-const deviceStateStore = require('../util/deviceStateStore');
 const fileProcesses = require('./fileProcesses');
 const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
@@ -53,17 +52,11 @@ function init() {
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
-    // this mess is why both state modules need to be combined
-    
     fileProcesses.doesFileExist(`./audio/created/${appState.currentConnection}`)
         .then(() => {
-          // two calls to preserve state of same entity is weird.
-         // deviceStateStore.addToSendQue(appState.currentConnection);
-        console.log('this broken but almost good')
           change({ entity: entities.deviceStateQue, patch: appState.currentConnection });
-         // fileProcesses.writeToStorage(deviceStateStore.deviceState.deviceStateQue);
         })
-        .catch(err => console.error(`unable to add file (${file}) to que -  ${err}`));
+        .catch(err => console.error(`eventManager - unable to add file to que: ${err}`));
   });
   eventBus.on(events.GET_FILE, downloadFiles);
 }

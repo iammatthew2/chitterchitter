@@ -120,8 +120,8 @@ module.exports = {
    */
   batchUpload: async files => {
     const proms = [];
-    if (!files) {
-      throw new Error('no files to upload');
+    if (files.length < 1) {
+      throw new Error('iotHubInterface.batchUpload - no files to upload');
     }
 
     for (let i = 0; i < files.length; i++) {

@@ -45,18 +45,6 @@ const entities = {
 };
 
 /**
-  * The Device State Store manages state for the device by saving state to disk.
-  * Settings here will be cached on device reboot.
-  * @param {*} slotName
-  */
- function addToSendQue(slotName) {
-  if (!deviceState.deviceStateQue.includes(slotName)) {
-    deviceState.deviceStateQue.push(slotName);
-    console.log(`added ${slotName} to: ${deviceState.deviceStateQue}`);
-  }
-}
-
-/**
  * Update the state by assigning a specific value, specifying a direction to
  * move to (in array ['a','b','c'] move from index 2 to 1), or patch an
  * object by giving a new or updated top-level property
@@ -86,21 +74,23 @@ function change({ entity, direction, value, patch }) {
 
 /**
  * Create a new entity with the new items patched in
- * @param {String} entity 
+ * @param {String} entity
  * @param {Object or Array} patch - item to add to current entity
+ * @return newState
  */
 function _getPatchState(entity, patch) {
   const entityElement = appState[entity];
   let newState;
   if (Array.isArray(entityElement)) {
-    newState = entityElement.slice(0).push(patch);
+    newState = entityElement.slice(0);
+    newState.push(patch);
   } else {
     newState = Object.assign({}, entityElement);
     Object.keys(patch).forEach(i => {
       newState[i] = patch[i];
     });
   }
-  
+
   return newState;
 }
 
