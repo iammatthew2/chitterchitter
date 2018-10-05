@@ -5,9 +5,10 @@ const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
 const { downloadFiles, uploadFilesSequence,
   updateDeviceState } = require('../util/sendReceiveHelpers');
-const { change, entities, appState } = require('../util/appStateStore');
+const { change, get } = require('../util/appStateStore');
 
 const events = config.events;
+const entities = config.appStates;
 
 /**
  * begin watching for events
@@ -53,13 +54,14 @@ function init() {
   eventBus.on(events.LISTEN_RECORDING_BUTTON_PRESS, toggleListenRecording);
   eventBus.on(events.START_STOP_PLAY_BUTTON_PRESS, toggleStartStopPlaying);
   eventBus.on(events.SEND_AUDIO_FILE_BUTTON_PRESS, () => {
-    const slot = appState.currentConnection;
+    const slot = get(entities.currentConnection);
     fileProcesses.doesFileExist(`./audio/created/${slot}`)
         .then(() => {
-          if (!appState.deviceStateQue.includes(slot)) {
+          const currentQue = get(entities.deviceStateQue);
+          if (!currentQue.includes(slot)) {
             change({ entity: entities.deviceStateQue, patch: slot });
           } else {
-            console.log(`nothing to add to ${appState.deviceStateQue}`);
+            console.info(`nothing to add to ${currentQue}`);
           }
         })
         .catch(err => console.error(`eventManager - unable to add file to que: ${err}`));

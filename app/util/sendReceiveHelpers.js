@@ -1,7 +1,8 @@
 const iotHubInterface = require('../services/iotHubInterface');
 const fileProcesses = require('../services/fileProcesses');
-const { appState, change, entities } = require('../util/appStateStore');
-const configs = require('./config');
+const { change, get } = require('../util/appStateStore');
+const config = require('./config');
+const entities = config.appStates;
 const path = require('path');
 
 const deviceId = 'abc123';
@@ -25,7 +26,7 @@ function _dumbRandomStringMaker() {
 }
 
 const altSlotToRemoteFileName = slot =>
-  path.join(configs.baseRemotePath, deviceId, altSlotToFileName(slot));
+  path.join(config.baseRemotePath, deviceId, altSlotToFileName(slot));
 const altSlotToFileName = slot => fileNamePairCache[slot];
 
 const fileNamePairCache = {};
@@ -38,7 +39,7 @@ function slotToSlotAndNamePair(slot) {
 function createMessageContent(queuedSlots) {
   const uploaderInfo = queuedSlots.map(slot => {
     const fileData = {};
-    fileData.recipient = appState.connections[slot];
+    fileData.recipient = get(entities.connections[slot]);// appState.connections[slot];
     fileData.file = altSlotToRemoteFileName(slot);
     return fileData;
   });
@@ -60,7 +61,7 @@ module.exports.downloadFiles = () => iotHubInterface.batchDownload(downloadFileS
     .then(() => console.info('all files downloaded'));
 
 module.exports.uploadFilesSequence = () => {
-  const queuedSlots = appState.deviceStateQue;
+  const queuedSlots = get(entities.deviceStateQue);
 
   iotHubInterface.batchUpload(queuedSlots.map(slotToSlotAndNamePair))
       .then(files => {

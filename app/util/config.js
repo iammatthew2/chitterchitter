@@ -28,6 +28,13 @@ module.exports = {
     gain: 8,
     debug: IS_DEBUG,
   },
+  appStates: {
+    player: 'player',
+    recorder: 'recorder',
+    currentConnection: 'currentConnection',
+    connections: 'connections',
+    deviceStateQue: 'deviceStateQue',
+  },
   audioInFileNames: {
     // we do not rename audio in to make it less likely that
     // a bug would cause us to preserve the file when a new file is downloaded
