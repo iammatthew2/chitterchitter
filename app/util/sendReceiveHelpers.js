@@ -39,7 +39,7 @@ function slotToSlotAndNamePair(slot) {
 function createMessageContent(queuedSlots) {
   const uploaderInfo = queuedSlots.map(slot => {
     const fileData = {};
-    fileData.recipient = get(entities.connections[slot]);// appState.connections[slot];
+    fileData.recipient = get(entities.connections)[slot];
     fileData.file = altSlotToRemoteFileName(slot);
     return fileData;
   });

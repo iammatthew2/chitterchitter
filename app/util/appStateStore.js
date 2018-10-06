@@ -74,6 +74,57 @@ const stateStatusOptions = {
 
 const entitiesPreservedOnDisk = [entities.deviceStateQue];
 
+/**
+ * Create a new entity with the new items patched in
+ * @param {String} entity
+ * @param {Object} patch - item to add to current entity
+ * @return {Object}
+ */
+function _getPatchState(entity, patch) {
+  const entityElement = appState[entity];
+  let newState;
+  if (Array.isArray(entityElement)) {
+    newState = entityElement.slice(0);
+    newState.push(patch);
+  } else {
+    newState = Object.assign({}, entityElement);
+    Object.keys(patch).forEach(i => {
+      newState[i] = patch[i];
+    });
+  }
+
+  return newState;
+}
+
+/**
+ * Given an entity, get the next state from an array of options
+ * We treat the array as circular so reaching the end of state
+ * options means we start back at the beginning.
+  * @param {*} entity
+  * @param {*} direction
+  * @return {Array}
+  */
+function _getNextState(entity, direction) {
+  const shouldMoveForward = direction === directions.forward;
+  const entityOptions = stateStatusOptions[entity];
+  const lengthFromZero = entityOptions.length -1;
+  const currentIndex = entityOptions.indexOf(appState[entity]);
+  let newIndex = shouldMoveForward ? currentIndex + 1 : currentIndex -1;
+
+  if (newIndex < 0) {
+    // we have tried to decrement the array index and are now at a negative value
+    // so circle back to the end of the array
+    newIndex = lengthFromZero;
+  } else if (newIndex > lengthFromZero) {
+    // we have tried to increment the array index and are now beyond the end of the array
+    // so circle back to the beginning of the array
+    newIndex = 0;
+  }
+
+  return entityOptions[newIndex];
+}
+
+
 function get(entity) {
   if (typeof entity === 'object') {
     return Object.freeze(Object.assign({}, appState[entity]));
@@ -116,56 +167,6 @@ function change({ entity, direction, value, patch }) {
   } else {
     return Promise.resolve(nextState);
   }
-}
-
-/**
- * Create a new entity with the new items patched in
- * @param {String} entity
- * @param {Object} patch - item to add to current entity
- * @return {Object}
- */
-function _getPatchState(entity, patch) {
-  const entityElement = appState[entity];
-  let newState;
-  if (Array.isArray(entityElement)) {
-    newState = entityElement.slice(0);
-    newState.push(patch);
-  } else {
-    newState = Object.assign({}, entityElement);
-    Object.keys(patch).forEach(i => {
-      newState[i] = patch[i];
-    });
-  }
-
-  return newState;
-}
-
-/**
- * Given an entity, get the next state from an array of options
- * We treat the array as circular so reaching the end of state
- * options means we start back at the beginning.
-  * @param {*} entity
-  * @param {*} direction
-  * @return {Array}
-  */
-function _getNextState(entity, direction) {
-  const shouldMoveForward = direction === directions.forward;
-  const itemOptions = stateStatusOptions[entity];
-  const lengthFromZero = itemOptions.length -1;
-  const currentIndex = itemOptions.indexOf(appState[entity]);
-  let newIndex = shouldMoveForward ? currentIndex + 1 : currentIndex -1;
-
-  if (newIndex < 0) {
-    // we have tried to decrement the array index and are now at a negative value
-    // so circle back to the end of the array
-    newIndex = lengthFromZero;
-  } else if (newIndex > lengthFromZero) {
-    // we have tried to increment the array index and are now beyond the end of the array
-    // so circle back to the beginning of the array
-    newIndex = 0;
-  }
-
-  return itemOptions[newIndex];
 }
 
 _initPersistStorage();
