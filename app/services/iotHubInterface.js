@@ -28,6 +28,7 @@ const configureTwin = receivedTwin => twin = receivedTwin;
  */
 function handleDeviceTwinEvents() {
   twin.on('properties.desired', delta => {
+    console.log(`desired properties: ${JSON.stringify(delta)}`);
     eventBus.emit(events.RECEIVED_CLOUD_STATE_PATCH, delta);
   });
 }
@@ -42,7 +43,7 @@ function sendReportedProperties(reportedPropertiesPatch) {
     if (err) {
       throw err;
     } else {
-      console.info(`Twin state successfully - patch: ${reportedPropertiesPatch}`);
+      console.info(`Twin state update success - patch: ${JSON.stringify(reportedPropertiesPatch)}`);
     }
   });
 }
@@ -73,7 +74,7 @@ function upload(filename, newName) {
  * @return {Promise}
  */
 function download([source, localName]) {
-  return fetch(source).then(res => {
+  return fetch(decodeURIComponent(source)).then(res => {
     return new Promise((resolve, reject) => {
       const dest = fs.createWriteStream(`${config.downloadFilePath}${localName}`);
       res.body.pipe(dest);
@@ -92,7 +93,7 @@ module.exports = {
       client.getTwin(function(err, receivedTwin) {
         configureTwin(receivedTwin);
         handleDeviceTwinEvents();
-        eventBus.emit(events.RECEIVED_CLOUD_STATE, receivedTwin.properties.reported);
+        eventBus.emit(events.RECEIVED_CLOUD_STATE, receivedTwin.properties.desired);
       });
     });
   },
@@ -125,7 +126,7 @@ module.exports = {
     }
 
     for (let i = 0; i < files.length; i++) {
-      proms.push(upload(files[i]['slot'], files[i]['name']));
+      proms.push(upload(files[i]['slot'], files[i]['newName']));
       // add pause in this loop to throttle our uploads
       await new Promise(res => setTimeout(res, 500));
     }

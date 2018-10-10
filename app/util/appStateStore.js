@@ -49,6 +49,7 @@ const appState = {
   player: 'notPlaying',
   recorder: 'notRecording',
   currentConnection: 'slot1',
+  //  {slot1: "abc123", slot2: "abcxyz", slot5: "abc456"}
   connections: {},
   deviceStateQue: [],
   receivedFilesStatus: {
@@ -72,7 +73,7 @@ const stateStatusOptions = {
   currentConnection: ['slot1', 'slot2', 'slot3', 'slot4', 'slot5'],
 };
 
-const entitiesPreservedOnDisk = [entities.deviceStateQue];
+const entitiesPreservedOnDisk = [entities.deviceStateQue, entities.connections];
 
 /**
  * Create a new entity with the new items patched in
@@ -158,7 +159,9 @@ function change({ entity, direction, value, patch }) {
     nextState = _getPatchState(entity, patch);
   }
 
-  console.info(`change: state for ${entity} to ${nextState}`);
+  const displayNextState = typeof nextState === 'object' ? JSON.stringify(nextState) : nextState;
+
+  console.info(`change: state for ${entity} to ${displayNextState}`);
   appState[entity] = nextState;
 
   if (entitiesPreservedOnDisk.includes(entity)) {

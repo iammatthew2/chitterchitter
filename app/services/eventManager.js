@@ -3,7 +3,7 @@ const config = require('../util/config');
 const fileProcesses = require('./fileProcesses');
 const { toggleStartStopRecording, toggleStartStopPlaying,
   toggleListenRecording } = require('../util/audioHelpers');
-const { downloadFiles, uploadFilesSequence,
+const { downloadManager, uploadFilesSequence,
   updateDeviceState } = require('../util/sendReceiveHelpers');
 const { change, get } = require('../util/appStateStore');
 
@@ -18,6 +18,10 @@ function init() {
     if (evt && evt.connections) {
       change({ entity: entities.connections, value: evt.connections });
     }
+
+    if (evt && evt.downloadNotifications) {
+      downloadManager(evt.downloadNotifications);
+    }
   });
   eventBus.on(events.RECEIVED_CLOUD_STATE_PATCH, evt => {
     if (evt && evt.connections) {
@@ -28,6 +32,9 @@ function init() {
             patch[entities.connections] = newState;
             updateDeviceState(patch);
           });
+    }
+    if (evt && evt.downloadNotifications) {
+      downloadManager(evt.downloadNotifications);
     }
   });
   eventBus.on(events.SCROLL_CONNECTION_SELECT, evt => {
@@ -66,7 +73,7 @@ function init() {
         })
         .catch(err => console.error(`eventManager - unable to add file to que: ${err}`));
   });
-  eventBus.on(events.GET_FILE, downloadFiles);
+  // eventBus.on(events.GET_FILE, downloadFiles);
 }
 
 module.exports = { init };
