@@ -57,26 +57,6 @@ function objectReverser(item) {
   return output;
 }
 
-module.exports.downloadManager = files => {
-  // files: {abc123: someFilePath}
-  // call with [['sourceName', 'localName']
-  // iotHubInterface.batchDownload(downloadFileSet).then(() => console.info('all files downloaded'));
-
-  // {slot1: "abc123", slot2: "abcxyz", slot5: "abc456"}
-  const connections = get(entities.connections);
-  // {"abc123": slot1, "abc456": slot2,
-  const idsToSlots = objectReverser(connections);
-  const fileSetsToDownload = [];
-  Object.keys(files).forEach(fileKey => {
-    const file = files[fileKey];
-    const slot = idsToSlots[fileKey];
-    fileSetsToDownload.push([file, `${slot}.wav`]);
-  });
-
-  iotHubInterface.batchDownload(fileSetsToDownload)
-      .then(() => console.info('all files downloaded'))
-      .catch(e => console.info(`download failure: ${e}`));
-
   /**
    * What should this method do?
     - download any new file or files
@@ -85,19 +65,52 @@ module.exports.downloadManager = files => {
     -- the hub will null the desired property
     - mark file as new
    */
+module.exports.downloadManager = files => {
+  // {slot1: "abc123", slot2: "abcxyz", slot5: "abc456"}
+  const connections = get(entities.connections);
+  // {"abc123": slot1, "abc456": slot2,
+  const idsToSlots = objectReverser(connections);
+  const fileSetsToDownload = [];
+  const fileKeys = Object.keys(files);
+  fileKeys.forEach(fileKey => {
+    const file = files[fileKey];
+    const slot = idsToSlots[fileKey];
+    if (file && slot) {
+      console.info(`have file: ${file} and slot: ${slot}`);
+      fileSetsToDownload.push([file, `${slot}.wav`]);  
+    } else {
+      console.info(`Missing file: ${file}, or missing slot: ${slot}`);
+    }
+  });
+
+  if (fileSetsToDownload.length > 0) {
+    iotHubInterface.batchDownload(fileSetsToDownload)
+    .then(() => {
+      createConfirmDownloadPatch(fileKeys);
+      console.info('all files downloaded - ');
+    })
+    .catch(e => console.info(`download failure: ${e}`));
+  } else {
+    console.info(`There are no files to download in fileSetsToDownload: ${fileSetsToDownload}`);
+  }
 };
+
+
+function createConfirmDownloadPatch(successfulDownloads){
+  const confirmDownloadsMsg = {
+    sender: deviceId,
+    successfulDownloads
+  };
+  const r=1;
+  iotHubInterface.sendMesssage({ confirmDownloadsMsg });
+}
 
 module.exports.uploadFilesSequence = () => {
   const queuedSlots = get(entities.deviceStateQue);
 
   iotHubInterface.batchUpload(queuedSlots.map(slotToSlotAndNamePair))
       .then(files => {
-        // TODO: refactor slotToSlotAndNamePair so that we send an array of arrays for upload
-        // like we do with the download I think
         const theContent = createMessageContent(queuedSlots);
-        // iotHubInterface.updateDeviceState({ twinContent: theContent });
-        // the above line fails b/c has an array. This can all be done via device twins
-        // and can skip the sendMessage. But must get azure function working
         iotHubInterface.sendMesssage({ msgContent: theContent });
         return fileProcesses.deleteFiles(files);
       })

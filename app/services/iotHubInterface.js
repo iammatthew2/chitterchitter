@@ -74,7 +74,9 @@ function upload(filename, newName) {
  * @return {Promise}
  */
 function download([source, localName]) {
-  return fetch(decodeURIComponent(source)).then(res => {
+  const downloadFile = decodeURIComponent(decodeURIComponent(source));
+  console.info(`downloadFile is heres: ${downloadFile}`);
+  return fetch(downloadFile).then(res => {
     return new Promise((resolve, reject) => {
       const dest = fs.createWriteStream(`${config.downloadFilePath}${localName}`);
       res.body.pipe(dest);
