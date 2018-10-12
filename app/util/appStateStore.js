@@ -159,7 +159,8 @@ function change({ entity, direction, value, patch }) {
     nextState = _getPatchState(entity, patch);
   }
 
-  const displayNextState = typeof nextState === 'object' ? JSON.stringify(nextState) : nextState;
+  const displayNextState = typeof nextState === 'object'
+    ? JSON.stringify(nextState) : nextState;
 
   console.info(`change: state for ${entity} to ${displayNextState}`);
   appState[entity] = nextState;

@@ -43,7 +43,8 @@ function sendReportedProperties(reportedPropertiesPatch) {
     if (err) {
       throw err;
     } else {
-      console.info(`Twin state update success - patch: ${JSON.stringify(reportedPropertiesPatch)}`);
+      console.info(`Twin state update 
+        success - patch: ${JSON.stringify(reportedPropertiesPatch)}`);
     }
   });
 }

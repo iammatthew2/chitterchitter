@@ -6,10 +6,6 @@ const entities = config.appStates;
 const path = require('path');
 
 const deviceId = process.env.DEVICE_ID;
-const sendMessageContent = {
-  sender: deviceId,
-  uploaderNotifications: [],
-};
 
 /**
  * Just like real crypto but dumber and not safe
@@ -43,6 +39,11 @@ function createMessageContent(queuedSlots) {
     return fileData;
   });
 
+  const sendMessageContent = {
+    sender: deviceId,
+    uploaderNotifications: [],
+  };
+
   sendMessageContent.uploaderNotifications = uploaderInfo;
   return sendMessageContent;
 }
@@ -57,7 +58,7 @@ function objectReverser(item) {
   return output;
 }
 
-  /**
+/**
    * What should this method do?
     - download any new file or files
     -- each files should be named based on the slot
@@ -65,6 +66,7 @@ function objectReverser(item) {
     -- the hub will null the desired property
     - mark file as new
    */
+
 module.exports.downloadManager = files => {
   // {slot1: "abc123", slot2: "abcxyz", slot5: "abc456"}
   const connections = get(entities.connections);
@@ -77,7 +79,7 @@ module.exports.downloadManager = files => {
     const slot = idsToSlots[fileKey];
     if (file && slot) {
       console.info(`have file: ${file} and slot: ${slot}`);
-      fileSetsToDownload.push([file, `${slot}.wav`]);  
+      fileSetsToDownload.push([file, `${slot}.wav`]);
     } else {
       console.info(`Missing file: ${file}, or missing slot: ${slot}`);
     }
@@ -85,23 +87,23 @@ module.exports.downloadManager = files => {
 
   if (fileSetsToDownload.length > 0) {
     iotHubInterface.batchDownload(fileSetsToDownload)
-    .then(() => {
-      createConfirmDownloadPatch(fileKeys);
-      console.info('all files downloaded - ');
-    })
-    .catch(e => console.info(`download failure: ${e}`));
+        .then(() => {
+          createConfirmDownloadPatch(fileKeys);
+          console.info('all files downloaded - ');
+        })
+        .catch(e => console.info(`download failure: ${e}`));
   } else {
-    console.info(`There are no files to download in fileSetsToDownload: ${fileSetsToDownload}`);
+    console.info(`There are no files to download in 
+    fileSetsToDownload: ${fileSetsToDownload}`);
   }
 };
 
 
-function createConfirmDownloadPatch(successfulDownloads){
+function createConfirmDownloadPatch(successfulDownloads) {
   const confirmDownloadsMsg = {
     sender: deviceId,
-    successfulDownloads
+    successfulDownloads,
   };
-  const r=1;
   iotHubInterface.sendMesssage({ confirmDownloadsMsg });
 }
 
