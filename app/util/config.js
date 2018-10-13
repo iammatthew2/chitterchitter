@@ -54,7 +54,7 @@ module.exports = {
     buttons: {
       startStopRecording: 31,
       startStopListenRecording: 29,
-      startStopPlaying: 40,
+      startStopPlaying: 23,
       sendAudioFile: 36,
     },
     rotaryDial: {
