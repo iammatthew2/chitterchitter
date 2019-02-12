@@ -1,75 +1,33 @@
-const rpio = require('rpio');
-const rpioHelpers = require('../util/rpioHelpers');
+const Gpio = require('onoff').Gpio;
+const rpioHelpers = require('../util/ioHelpers');
 const eventBus = require('../util/eventBus');
 const config = require('../util/config');
 
-const { buttons, lights } = config.hardware;
+const pins = config.hardware;
 const events = config.events;
 
-/* eslint-disable no-unused-vars */
-/**
- * Very rough version of an rotary encoder util
- */
-function rotaryDialWatcher() {
-  // try this: https://github.com/andrewn/raspi-rotary-encoder
-
-  /**
-var raspi = require('raspi');
-var RotaryEncoder = require('raspi-rotary-encoder').RotaryEncoder;
-
-raspi.init(function() {
-  var encoder = new RotaryEncoder({
-    pins: { a: 5, b: 4 },
-    pullResistors: { a: "up", b: "up" }
-  });
-
-  encoder.addListener('change', function (evt) {
-    console.log('Count', evt.value);
-  })
-});
- */
-  const dir = config.directions;
-  let cache = 0;
-  const encoder = {};
-  encoder.on('change', e => {
-    eventBus.emit(events.SCROLL_CONNECTION_SELECT,
-      e.val > cache ? dir.forward : dir.back);
-    cache = e.val;
-  });
-}
-
+const OUT = 'out';
 const hardware = {
   init() {
-    // open all the light pins
-    const lightPins = Object.keys(lights).map(i => lights[i]);
-    lightPins.forEach(pin => rpio.open(pin, rpio.OUTPUT));
 
-    // set all light pins as output and set to off
-    lightPins.forEach(pin => rpio.open(pin, rpio.OUTPUT));
-    lightPins.forEach(pin => rpio.write(pin, rpio.LOW));
+    const toggleListenButton = new Gpio(pins.buttons.startStopListenRecording, 'in', 'both');
+    const sendAudioFileButton = new Gpio(pins.buttons.sendAudioFile);
+    const togglePlayButton = new Gpio(pins.buttons.startStopPlaying);
+    const toggleRecordButton = new Gpio(pins.buttons.startStopRecording);
+    // open all the light pins
+    const lightPins = Object.keys(pins.lights).map(i => lights[i]);
+    lightPins.forEach(pin => new Gpio(pin, OUT));
 
     // open all button pins
-    const buttonPins = Object.keys(buttons).map(i => buttons[i]);
-    buttonPins.forEach(pin => rpio.open(pin, rpio.INPUT, rpio.PULL_UP));
+    const buttonPins = Object.keys(pins.buttons).map(i => buttons[i]);
+    buttonPins.forEach(pin => new Gpio(pin, 'in', 'rising', {debounceTimeout: 10}));
 
-    rpioHelpers.safePoll(buttons.startStopRecording, () =>
+    rpioHelpers.safePoll(pins.buttons.startStopRecording, () =>
       eventBus.emit(events.START_STOP_RECORD_BUTTON_PRESS));
-    rpioHelpers.safePoll(buttons.startStopPlaying, () =>
+    rpioHelpers.safePoll(pins.buttons.startStopPlaying, () =>
       eventBus.emit(events.START_STOP_PLAY_BUTTON_PRESS));
-    rpioHelpers.safePoll(buttons.sendAudioFile, () =>
+    rpioHelpers.safePoll(pins.buttons.sendAudioFile, () =>
       eventBus.emit(events.SEND_AUDIO_FILE_BUTTON_PRESS));
-  },
-
-  toggleLightArray(lightArray = [], turnOn = true) {
-    lightArray.forEach(light => rpio.write(light, turnOn ? rpio.HIGH : rpio.LOW));
-  },
-
-  toggleSingleLight(light, turnOn) {
-    this.toggleLightArray([light], turnOn);
-  },
-
-  iterateThroughLightArray(lightArray, startAllOn = false) {
-    this.toggleLightArray(lightArray, startAllOn);
   },
 };
 
