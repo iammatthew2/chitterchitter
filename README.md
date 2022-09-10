@@ -1,4 +1,6 @@
-# ChitterChitter - a node-based IoT device for sharing audio snippets with people you like
+# ChitterChitter
+
+a node-based IoT device for sharing audio snippets with people you like
 
 This is a node application designed to be run on a Raspberry Pi. It leverages Azure's IoT Hub for cloud services.
 
